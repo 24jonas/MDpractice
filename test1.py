@@ -1,8 +1,8 @@
-import numpy
+import numpy as np
 
 def hello():
     print("Hello World")
     
 hello()
 
-ahiodpa
+a = 1 + 2
