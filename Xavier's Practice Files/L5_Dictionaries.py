@@ -31,8 +31,8 @@ print(dict1.keys())     # Prints the keys in 'dict1'.
 print(dict1.values())       # Prints the values in 'dict1'.
 print(dict1.items())        # Prints the items in 'dicts1'.
 
-for key in dict1:
+for key in dict1:       # Prints the keys in 'dict1'.
     print(key)
 
-for key, value in dict1.items():
+for key, value in dict1.items():        # Prints the items, ie key/value pairs in 'dict1'.
     print(key, value)
