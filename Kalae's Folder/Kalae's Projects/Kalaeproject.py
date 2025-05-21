@@ -21,15 +21,23 @@ def function_Q1():
     x_final = r_minus * np.cos(theta)
     y_final = r_minus * np.sin(theta)
     # This section calculates the foci of the ellipse
-    #foci = np.sqrt(a**2 - b**2)
-    a  = int((r_minus * np.cos(2*np.pi)+r_minus * np.cos(np.pi))/2)
-    print(a)
+    #foci = np.sqrt(c**2 - d**2) c is y coordinate and d is x coordinate
+    #b is the average x value or the center of the ellipse
+    b  = (p/(1-e*np.cos(0))-p/(1-e*np.cos(np.pi)))/2
+    print(f"the center is loceated at (x,y): ({b},0)")
+    c= p/(1-e*np.cos(0))-b
+    print(c)
+    d= 2.3
+    #np.sqrt(c**2 - d**2)
+
     # Create the plot
+
     plt.plot(x_final, y_final, label=' Orbit 1 (e < 1)', color='blue')
-    plt.plot()
+    plt.plot(b-np.sqrt(c**2 - d**2), 0, 'ro', label='Focus 1')
+    plt.plot(b+np.sqrt(c**2 - d**2), 0, 'ro', label='Focus 2')
     plt.xlim(-15, 15)
     plt.ylim(-15, 15)
-   
+    plt.plot()
 
     plt.axhline(0, color='black', lw=0.5)
     plt.axvline(0, color='black', lw=0.5)
