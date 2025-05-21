@@ -57,3 +57,5 @@ print(dir(name)) # Prints all of the various methods that can be applied to the 
 print(help(str)) # Provides information about various string methods.
 
 print(help(str.lower)) # Provides informarion about the string method '.lower'.
+
+print('*' * 10)     # Prints 10 asterisks.
