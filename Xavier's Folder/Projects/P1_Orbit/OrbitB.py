@@ -20,7 +20,7 @@ ai_y = 0
 
 # Constructs the array with ordered pairs.
 for i in range(l):
-    a[i] = [x, y]
+    a[i] = [x, y]       # Measure the energy and update. See if it fluctuates from the original.
 
     r = radius(x, y)
     theta = angle(x, y)

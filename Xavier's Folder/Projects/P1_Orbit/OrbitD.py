@@ -7,10 +7,10 @@ import matplotlib.pyplot as plt
 from Keplerian import *
 
 # Variables
-array1 = np.zeros((360, 2))
+l = 360
+array1 = np.zeros((l, 2))
 x_0 = 10
 v_0 = 0.1
-l = 500
 
 # Solving for variables in the equation for the radius.
 p = slr(x_0, v_0)
@@ -18,7 +18,7 @@ e_0 = energy(x_0, v_0)
 a = sma(e_0)
 e = eccentricity(p, a)
 
-for i in range(360):
+for i in range(l):
     theta = i*np.pi/180
     r = radius(p, e, theta)
     x = x_comp(r, theta)

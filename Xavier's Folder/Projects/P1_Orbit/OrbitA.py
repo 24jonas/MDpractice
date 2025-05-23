@@ -8,7 +8,7 @@ import matplotlib.patches as patches
 from VerletA import *       # A few of the functions in 'VerletA' don't get used.
 
 # Array
-l = 100000
+l = 1000
 a = np.zeros((l,2))
 
 # Initial
