@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 from VerletB import *
 
 # Array
-a = np.zeros((1000,2))
+l = 10000
+a = np.zeros((l,2))
 
 # Initial
 vi_x = 0
@@ -18,7 +19,7 @@ ai_x = -0.01
 ai_y = 0
 
 # Constructs the array with ordered pairs.
-for i in range(1000):
+for i in range(l):
     a[i] = [x, y]
 
     r = radius(x, y)
@@ -42,6 +43,7 @@ x = a[:, 0]
 y = a[:, 1]
 
 plt.plot(x, y, label='Trajectory', color='blue')
+plt.plot(0, 0, 'ro', label='Planet', color='black')
 plt.xlabel('x')
 plt.ylabel('y')
 plt.title('OrbitB')

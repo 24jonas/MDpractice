@@ -46,6 +46,8 @@ def dy(y, y_i, a1_y):
     y_f = 2*y - y_i + a1_y*(dt)**2
     return y_f
 
+# The functions beyond this point are not accessed by 'OrbitA', because they are used for calculating velocity according to the Verlet algorithm.
+
 def radius2(x_f, y_f):
     r2 = np.sqrt((x_f**2) + (y_f**2))
     return r2

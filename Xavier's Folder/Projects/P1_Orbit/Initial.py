@@ -1,3 +1,5 @@
+# Produces an array with ordered pairs calculated from the given equation for radius.
+
 import matplotlib.pyplot as plt
 import numpy as np
 

@@ -1,4 +1,4 @@
-# These functions are accessed by OrbitB.py to produce an orbital path.
+# These functions are accessed by OrbitB.py to produce an orbital path. The constants where calculated or sourced separately.
 
 # Constants
 dt = 0.151734

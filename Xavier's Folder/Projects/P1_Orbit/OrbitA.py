@@ -4,20 +4,22 @@
 # Imports
 import numpy as np
 import matplotlib.pyplot as plt
-from VerletA import *
+import matplotlib.patches as patches
+from VerletA import *       # A few of the functions in 'VerletA' don't get used.
 
 # Array
-a = np.zeros((5000,2))
+l = 100000
+a = np.zeros((l,2))
 
 # Initial
 x_i = 10
 y_i = -0.1
-# x_i = 9.98479 & y_i = -0.174285based on InitialA but this cause an early approximation error to propogate.
+# x_i = 9.98479 & y_i = -0.174285based on 'Initial' but this cause an early approximation error to propogate.
 x = 10
 y = 0
 
 # Constructs the array with ordered pairs.
-for i in range(5000):
+for i in range(l):
     a[i] = [x, y]
 
     r1 = radius1(x, y)
@@ -37,6 +39,7 @@ x = a[:, 0]
 y = a[:, 1]
 
 plt.plot(x, y, label='Trajectory', color='blue')
+plt.plot(0, 0, 'ro', label='Planet', color='black')
 plt.xlabel('x')
 plt.ylabel('y')
 plt.title('OrbitA')
