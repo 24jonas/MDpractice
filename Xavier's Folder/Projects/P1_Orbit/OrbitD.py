@@ -1,4 +1,5 @@
 # This is a more costumizable version of 'OrbitC'. Note that the initial position and velocity values only work for x position and y velocity.
+# The period and increments functions from 'Keplerian.py' are not called. I calculated radius as a function of angle, not time.
 
 # Imports
 import numpy as np
@@ -6,7 +7,6 @@ import matplotlib.pyplot as plt
 from Keplerian import *
 
 # Variables
-theta = np.linspace(0, 2*np.pi ,360)
 array1 = np.zeros((360, 2))
 x_0 = 10
 v_0 = 0.1
@@ -17,14 +17,23 @@ p = slr(x_0, v_0)
 e_0 = energy(x_0, v_0)
 a = sma(e_0)
 e = eccentricity(p, a)
-t = period(a)
-dt = increments(t, l)
 
 for i in range(360):
-    theta = i
+    theta = i*np.pi/180
     r = radius(p, e, theta)
     x = x_comp(r, theta)
     y = y_comp(r, theta)
     array1[i] = [x, y]
 
-print(array1)
+x = array1[:, 0]
+y = array1[:, 1]
+
+plt.plot(x, y, label='Trajectory', color='blue')
+plt.plot(0, 0, 'ro', label='Planet', color='black')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('OrbitD')
+plt.grid(True)
+plt.legend()
+plt.axis('equal')
+plt.show()
