@@ -13,29 +13,45 @@ p=h**2
 # Constants for integration
 dt = p/500
 T= 10
-steps = int(T / dt)
-G= 1
-m=1
+steps = 100000 #int(T / dt)
+G= 1 # simplified gravitational constant.
+m=1 # simplified mass of body.
 e=np.sqrt(1-p/a)
-theta= np.linspace(0, 2*np.pi, 100) 
+theta= 0  
+radius = np.sqrt(x_0**2 + 0**2)  # Initial radius
 r_minus = p/(1-e*np.cos(theta))
-Acceleration= G*m/r_minus**2
+Acceleration_x= G*m/r_minus**2
+Acceleration_y= G*m/r_minus**2
 
 #Initial conditions
-x = np.zeros(steps)
-v = np.zeros(steps)
-x[0] = [x_0,0]
-v[0] = [0,yv_0]
+x = [x_0]
+y = [0]
+v_y = [yv_0]
+v_x=[0]
 
 
 # Euler-Cromer Integration
-for i in range(steps - 1):
-    Acceleration = G * m / r_minus**2
-    v[i + 1] = v[i] + Acceleration * dt
-    x[i + 1] = x[i] + v[i + 1] * dt
-
+for i in range(steps):
+    if theta <= np.pi:
+        Acceleration_x = (G * m / radius**2) * np.cos(theta)
+        Acceleration_y = (G * m / radius**2) * np.sin(theta)
+        v_x.append((v_x[i]) - Acceleration_x * dt)
+        v_y.append((v_y[i]) -Acceleration_y * dt)
+        x.append(x[i] + v_x[i+1] * dt)
+        y.append(y[i] + v_y[i+1] * dt)
+        theta= np.arctan(y[i+1]/x[i+1])  # Update theta based on new position
+        radius = np.sqrt(x[i+1]**2 + y[i+1]**2)  # Update radius based on new position
+    else:
+        Acceleration_x = (G * m / radius**2) * np.cos(theta)
+        Acceleration_y = (G * m / radius**2) * np.sin(theta)
+        v_x.append((v_x[i]) - Acceleration_x * dt)
+        v_y.append((v_y[i]) - Acceleration_y * dt)
+        x.append(x[i] + v_x[i+1] * dt)
+        y.append(y[i] + v_y[i+1] * dt)
+        theta= np.arctan(y[i+1]/x[i+1])
+        radius = np.sqrt(x[i+1]**2 + y[i+1]**2)
 # Plot
-plt.plot(x[:, 0], x[:, 1], label='Orbit', color='blue')
+plt.plot(x, y, label='Orbit', color='blue')
 plt.title("Orbit Using Euler-Cromer Method")
 plt.xlabel("X Position (m)")
 plt.ylabel("Y Position (m)")
