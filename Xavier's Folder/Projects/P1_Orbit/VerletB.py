@@ -1,7 +1,7 @@
 # These functions are accessed by OrbitB.py to produce an orbital path. The constants where calculated or sourced separately.
 
 # Constants
-dt = 0.151734
+dt = 0.151734*0.1
 m = 1.4983*10**9
 g = 6.6743*10**(-11)
 

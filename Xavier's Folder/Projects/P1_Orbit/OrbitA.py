@@ -8,13 +8,13 @@ import matplotlib.patches as patches
 from VerletA import *       # A few of the functions in 'VerletA' don't get used.
 
 # Array
-l = 1000
+l = 10000
 a = np.zeros((l,2))
 
 # Initial
 x_i = 10
 y_i = -0.1
-# x_i = 9.98479 & y_i = -0.174285based on 'Initial' but this cause an early approximation error to propogate.
+# x_i = 9.98479 & y_i = -0.174285based on 'Initial' but this causes an early approximation error to propogate.
 x = 10
 y = 0
 
@@ -35,10 +35,10 @@ for i in range(l):
     y = y_f
 
 # Plots the ordered pairs of the array.
-x = a[:, 0]
-y = a[:, 1]
+x1 = a[:, 0]
+y1 = a[:, 1]
 
-plt.plot(x, y, label='Trajectory', color='blue')
+plt.plot(x1, y1, label='Trajectory', color='blue')
 plt.plot(0, 0, 'ro', label='Planet', color='black')
 plt.xlabel('x')
 plt.ylabel('y')

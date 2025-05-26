@@ -1,15 +1,49 @@
-# Using the initial conditions provided in the homework, I caclulated eccentricity to be 0.9, and p to be 1.
+# Produces an orbit based on the version of the Verlet algorithm shown in the finished homework.
 
+# Imports
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+from VerletC import *       # A few of the functions in 'VerletC' don't get used.
 
-theta = np.linspace(0, 2*np.pi ,360)
-r = (1 - (0.9)*np.cos(theta)) ** (-1)       # The equation for the radius as a function of theta.
+# Variables
+x = 10
+y = 0
+v_x = 0
+v_y = 0.1
+l = 10000
+array1 = np.zeros((l,2))
 
-# 1 - ecos() is used here because it gives the correct initial x value. Using "1 + ecos()" just flips the orbit about the y-axis.
+# Solving for variables in the equation for the radius.
+p = slr(x, v_y)
+e_0 = energy(x, v_y)
+a = sma(e_0)
+e = eccentricity(p, a)
+t = period(a)
+dt = t/10000
+print(dt)
 
-plt.figure(figsize=(6,6))
-ax = plt.subplot(111, polar=True)
-ax.plot(theta, r)
+# Constructing the array with coordinates.
+for i in range(l):
+    array1[i] = [x, y]
+
+    theta = angle(x, y)
+    r = radius(x, y)
+    a_x = acc_x(r, theta, x)
+    a_y = acc_y(r, theta, y)
+    x, v_x = dx(x, v_x, a_x, dt)
+    y, v_y = dy(y, v_y, a_y, dt)
+
+# Plots the ordered pairs of the array.
+x3 = array1[:, 0]
+y3 = array1[:, 1]
+
+plt.plot(x3, y3, label='Trajectory', color='blue')
 plt.plot(0, 0, 'ro', label='Planet', color='black')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('OrbitC')
+plt.grid(True)
+plt.legend()
+plt.axis('equal')
 plt.show()

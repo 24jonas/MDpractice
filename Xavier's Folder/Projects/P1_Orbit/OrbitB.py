@@ -39,10 +39,10 @@ for i in range(l):
     ai_y = a_y
 
 # Plots the ordered pairs of the array.
-x = a[:, 0]
-y = a[:, 1]
+x2 = a[:, 0]
+y2 = a[:, 1]
 
-plt.plot(x, y, label='Trajectory', color='blue')
+plt.plot(x2, y2, label='Trajectory', color='blue')
 plt.plot(0, 0, 'ro', label='Planet', color='black')
 plt.xlabel('x')
 plt.ylabel('y')
