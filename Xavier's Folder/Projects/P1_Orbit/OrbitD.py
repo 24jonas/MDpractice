@@ -1,39 +1,15 @@
-# This is a more costumizable version of 'OrbitC'. Note that the initial position and velocity values only work for x position and y velocity.
-# The period and increments functions from 'Keplerian.py' are not called. I calculated radius as a function of angle, not time.
+# Using the initial conditions provided in the homework, I caclulated eccentricity to be 0.9, and p to be 1.
 
-# Imports
 import numpy as np
 import matplotlib.pyplot as plt
-from Keplerian import *
 
-# Variables
-l = 360
-array1 = np.zeros((l, 2))
-x_0 = 10
-v_0 = 0.1
+theta = np.linspace(0, 2*np.pi ,360)
+r = (1 - (0.9)*np.cos(theta)) ** (-1)       # The equation for the radius as a function of theta.
 
-# Solving for variables in the equation for the radius.
-p = slr(x_0, v_0)
-e_0 = energy(x_0, v_0)
-a = sma(e_0)
-e = eccentricity(p, a)
+# 1 - ecos() is used here because it gives the correct initial x value. Using "1 + ecos()" just flips the orbit about the y-axis.
 
-for i in range(l):
-    theta = i*np.pi/180
-    r = radius(p, e, theta)
-    x = x_comp(r, theta)
-    y = y_comp(r, theta)
-    array1[i] = [x, y]
-
-x = array1[:, 0]
-y = array1[:, 1]
-
-plt.plot(x, y, label='Trajectory', color='blue')
+plt.figure(figsize=(6,6))
+ax = plt.subplot(111, polar=True)
+ax.plot(theta, r)
 plt.plot(0, 0, 'ro', label='Planet', color='black')
-plt.xlabel('x')
-plt.ylabel('y')
-plt.title('OrbitD')
-plt.grid(True)
-plt.legend()
-plt.axis('equal')
 plt.show()
