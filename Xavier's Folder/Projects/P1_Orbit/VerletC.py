@@ -8,7 +8,7 @@ def slr(x, v_y):
     p = (x*v_y)**2
     return p
 
-def energy(x, v_y):
+def energy_0(x, v_y):
     e_0 = (0.5)*(v_y)**2 - (x)**(-1)
     return e_0
 
@@ -64,3 +64,15 @@ def dy(y, v_y, a_y, dt):
     v_y = v_y + dt*a_y
     y = y + (0.5)*dt*v_y
     return y, v_y
+
+def energy(v, r):
+    e = (0.5)*(v**2) - r**(-1)
+    return e
+
+def error(e, e_0):
+    err = e/np.abs(e_0) - 1
+    return err
+
+def vel(v_x, v_y):
+    v = np.sqrt((v_x**2)+(v_y**2))
+    return v
