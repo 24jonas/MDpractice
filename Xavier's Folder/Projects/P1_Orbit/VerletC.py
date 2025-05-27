@@ -70,7 +70,7 @@ def energy(v, r):
     return e
 
 def error(e, e_0):
-    err = e/np.abs(e_0) - 1
+    err = e/e_0 - 1
     return err
 
 def vel(v_x, v_y):
