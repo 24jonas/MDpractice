@@ -3,21 +3,21 @@
 # Imports
 import numpy as np
 import matplotlib.pyplot as plt
-from FunctionsA import *
+from Functions1 import *
 
 # Input Variables
 rocket_mass = 5     # kg
 fuel_mass = 5       # kg
 burn_rate = 1       # kg/s
 gravitational_acceleration = 9.81   # m/s^2
-thrust = 300        # N
-angle = 89          # Degrees
+thrust = 1000        # N
+angle = 88          # Degrees
 initial_x = 0       # m
 initial_y = 0       # m
 initial_vx = 0      # m/s
 initial_vy = 0      # m/s
 coordinate_array = np.array([[initial_x, initial_y]])   # Ordered Pairs (x, y)
-precision = 0.01     # s
+precision = 0.001     # s
 time = 0
 total_mass = rocket_mass + fuel_mass
 
@@ -54,10 +54,13 @@ while y >= 0:
     co = np.append(co, [[x, y]], axis = 0)
 
 # Plot the coordinate pairs.
-x = co[:, 0]
-y = co[:, 1]
+x1 = co[:, 0]
+y1 = co[:, 1]
+x2 = np.linspace(-10, 10, 100)
+y2 = 0*x2
 
-plt.plot(x, y, label='Trajectory', color='blue')
+plt.plot(x1, y1, label='Trajectory', color='blue')
+plt.plot(x2, y2, label="Ground", color="green")
 plt.xlabel('x')
 plt.ylabel('y')
 plt.title('Basic Rocket')

@@ -1,4 +1,4 @@
-# This file contains the functions used in the 'Basic.py' file.
+# This file contains the functions used in the 'Rocket1' file.
 
 # Imports
 import numpy as np
