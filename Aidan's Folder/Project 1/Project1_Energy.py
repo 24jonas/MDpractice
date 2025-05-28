@@ -12,9 +12,9 @@ for i in range(len(x)):
     r = np.sqrt(x[i] ** 2 + y[i] ** 2)
     v = v_x[i] ** 2 + v_y[i] ** 2
 
-
-    E = 0.5 * v ** 2 - 1 / r
-    E_ratio = E / abs(E_0) - 1
+    ## Using wrong v?
+    E = (v ** 2) / 2 - (1 / r)
+    E_ratio = ((E) / (abs(E_0))) - 1
     E_list.append(E_ratio)
     t_list.append(t_list[i] + 1)
 
