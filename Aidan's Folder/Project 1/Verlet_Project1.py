@@ -63,15 +63,16 @@ def verlet(R, V, dt):
 
     return pos, vel
 
-## Declaring Constants ##
-dt = per / num
+## Declaring Variables ##
+dt = per / 500
 R = [x_0, 0.0]
 V = [0.0, vy_0]
+n = 4
 pos = pos_output = np.array([R])
 vel = vel_output = np.array([V])
 
 ## Main Loop ##
-for i in range(num * 4):
+for i in range(num * n):
 
     pos, vel = verlet(pos, vel, dt)
 
