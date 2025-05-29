@@ -9,9 +9,7 @@ def verlet(R, V, dt, m_1, m_2, t):
     
     R = R + 0.5 * dt * V
     t += 0.5
-    R_1 = r_1(t)
-    R_2 = r_2(t)
-    A = acc(R, R_1, R_2, m_1, m_2)
+    A = acc(R, r_1(t), r_2(t), m_1, m_2)
     V = V + dt * A
     R = R + 0.5 * dt * V
     t += 0.5
@@ -27,8 +25,8 @@ def For_Rut(R, V, dt, m_1, m_2, t):
     t_1 = t + dt / (2 - s)
     t_2 = t_1 - s * dt / (2 - s)
     
-    verlet(R, V, dt_1, m_1, m_2, t_2)
-    verlet(R, V, dt_2, m_1, m_2, t_1)
-    verlet(R, V, dt_1, m_1, m_2, t)
+    R, V, t = verlet(R, V, dt_1, m_1, m_2, t_2)
+    R, V, t = verlet(R, V, dt_2, m_1, m_2, t_1)
+    R, V, t = verlet(R, V, dt_1, m_1, m_2, t)
 
-    return
+    return R, V, t

@@ -20,8 +20,8 @@ def r_2(t):
     return R_2
 
 ## Initial Conditions for Moving Particle ##
-R = pos_list = np.array([[0.0, 0.058]])
-V = vel_list = np.array([[0.49, 0]])
+R = pos_list_1 = pos_list_2 = np.array([[0.0, 0.058]])
+V = vel_list_1 = vel_list_2 = np.array([[0.49, 0]])
 
 ## Initial Conditions for Stars ##
 m_1 = 0.5
