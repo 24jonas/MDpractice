@@ -26,6 +26,7 @@ r = radius(x, y)
 
 # Constructing the array with coordinates.
 for i in range(l):
+    r = radius(x, y)
     v = vel(v_x, v_y)
     e = energy(v, r)
     err = error(e, e_0)
