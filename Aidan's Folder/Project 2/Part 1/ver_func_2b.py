@@ -1,5 +1,5 @@
 import numpy as np
-from acc_func import *
+from acc_func_2b import *
 
 ## Position Verlet Function ##
 

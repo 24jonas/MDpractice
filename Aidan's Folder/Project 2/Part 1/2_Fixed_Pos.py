@@ -1,6 +1,5 @@
-from acc_func import *
-from ver_func import *
-from variables import *
+from ver_func_2b import *
+from variables_2b import *
 
 import numpy as np
 import matplotlib.pyplot as plt
