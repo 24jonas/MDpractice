@@ -1,7 +1,6 @@
 import numpy as np
 
 ## Acceleration Function for Position Verlet ##
-
 def acc(R, R_1, R_2, m_1, m_2):
 
     r_mag_1 = np.sqrt((R[0, 0] - R_1[0, 0]) ** 2 + (R[0, 1] - R_1[0, 1]) **2)
