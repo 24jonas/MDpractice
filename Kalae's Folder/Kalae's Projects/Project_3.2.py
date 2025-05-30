@@ -4,9 +4,10 @@ import matplotlib.pyplot as plt
 # -1/2 * [(r-r_1)/(d_1)**3]-1/2 * 
 # [(r-r_2)/(d_2)**3] = 0
 
-r_1 = [-0.5,0]
+r_1 = [-0.5*np.cos(0),-0.5*np.sin(0)]
 r_1_absolutevalue = 0.5
-r_2 = [0.5,0]
+r_x= []
+r_2 = [0.5*np.cos(0),0.5*np.sin(0)]
 r_2_absolutevalue = 0.5
 m_1 = 1/2
 m_2 = 1/2
@@ -14,10 +15,10 @@ m_2 = 1/2
 #theta_0= [np.pi/1.8, np.pi/2, np.pi/2.2, np.pi/2.4, np.pi/1.7, np.pi/2.3, np.pi/2.1]
 
 
-v_0=1.195
-theta_0 = np.pi/2.5 # Initial angle of the velocity of the planet
-v_x = [v_0*np.cos(theta_0)]  # Initial x velocity
-v_y = [v_0*np.sin(theta_0)]  # Initial y velocity
+v_0=.6
+theta_0 = np.pi/1.7 # Initial angle of the velocity of the planet
+v_x = [v_0*np.cos(t)]  # Initial x velocity
+v_y = [v_0*np.sin(t)]  # Initial y velocity
 v_001 = [v_x, v_y]  # Initial velocity vector
 steps = 2000
 dt = 0.001
@@ -34,6 +35,8 @@ for i in range(steps):
         v_y.append(v_y[i] + Acceleration_y * dt)
         x.append(x[i] + v_x[i+1] * dt)
         y.append(y[i] + v_y[i+1] * dt)
+        r_1 = [-0.5*np.cos(t),-0.5*np.sin(t)]
+        r_2 = [0.5*np.cos(t),0.5*np.sin(t)]
 
 
 
