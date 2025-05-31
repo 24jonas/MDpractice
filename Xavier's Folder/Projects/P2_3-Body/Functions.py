@@ -4,7 +4,7 @@
 import numpy as np
 
 # Input Variables
-calculations = 100000             # unitless
+calculations = 1000000          # unitless
 time_unit = 0.001               # seconds
 object_initial_x_position = 0   # meters
 object_initial_y_position = 0   # meters
@@ -43,8 +43,8 @@ vo = np.array([v_0*np.cos(theta), v_0*np.sin(theta)])
 co = np.zeros((l,2))
 
 # Functions
-def Radius(x, y):
-    r = np.sqrt((x**2) + (y**2))
+def Radius(ro):
+    r = np.sqrt((ro[0]**2) + (ro[1]**2))
     return r
 
 def Angle(x, y):
