@@ -7,12 +7,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Functions import *
 
-# Generate combinations.
+# Generate combinations. 200 & 90, 100 & 180.
 combinations = []
-for i in range(200):
-    for j in range(90):
-        v_0 = i/100
-        theta = j*np.pi/180
+for i in range(20):
+    for j in range(9):
+        v_0 = i/10
+        theta = j*np.pi/18
         combinations.append((v_0, theta))
 
 print("----------------------------------------------------------------------------------------------------------------------------------------")
@@ -157,6 +157,8 @@ for pair in trim3:
         
     r = Radius(ro)
     check4.append((r, v_0, theta))
+    count += 1
+    print(count)
 
 print("Solution part 2")
 count = 0
@@ -172,5 +174,7 @@ print(solutions)
 print("----------------------------------------------------------------------------------------------------------------------------------------")
 
 print("Complete")
+
+print("----------------------------------------------------------------------------------------------------------------------------------------")
 
 solutions.append((0,0))
