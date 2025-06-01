@@ -1,4 +1,4 @@
-# Functions for the three body problem project.
+# Functions for 'Orbit1.py'.
 
 # Imports
 import numpy as np
