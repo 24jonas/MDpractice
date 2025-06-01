@@ -7,12 +7,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Functions import *
 
-# Generate combinations. 200 & 90, 100 & 180.
+# Generate combinations.
 combinations = []
-for i in range(20):
-    for j in range(9):
-        v_0 = i/10
-        theta = j*np.pi/18
+for i in range(200):
+    for j in range(90):
+        v_0 = i/100
+        theta = j*np.pi/180
         combinations.append((v_0, theta))
 
 print("----------------------------------------------------------------------------------------------------------------------------------------")
