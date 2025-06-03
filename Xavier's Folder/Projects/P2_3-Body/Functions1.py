@@ -47,23 +47,6 @@ def Radius(ro):
     r = np.sqrt((ro[0]**2) + (ro[1]**2))
     return r
 
-def Angle(x, y):
-    if x > 0:
-        theta = np.arctan(y/x)
-    elif x < 0:
-        theta = np.arctan(-y/x)
-    else:
-        theta = (np.abs(y)/y)*np.pi/2
-    return theta
-
-def X_Acceleration(r, theta, x):
-    a_x = "x acceleration"
-    return a_x
-
-def Y_Acceleration(r, theta):
-    a_y = "y acceleration"
-    return a_y
-
 def Acceleration(ro, r1, r2):
     d1 = np.abs(ro - r1)
     d2 = np.abs(ro - r2)
