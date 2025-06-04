@@ -1,4 +1,4 @@
-# These functions are accessed by 'OrbitC.py' using a different version of the Verlet algorithm.
+# These functions are accessed by 'OrbitF.py' using a different version of the Verlet algorithm.
 
 # Imports
 import numpy as np

@@ -1,6 +1,6 @@
 import numpy as np
 
-## Declaration of Variables for Project 2 Part 2 ##
+## Declaration of Variables and Constants for Project 2 Part 2 ##
 
 ## Moving Stars Functions ##
 def r_1(t):
@@ -36,3 +36,11 @@ t = 0
 
 ## Other Variables ##
 s = 2 ** (1 / 3)
+
+## Jacobi Constant Function ##
+def J(t):
+    J = V ** 2 - 1 / (R - r_1(t)) - 1 / (R-r_2(t) - (np.cross(2 * R, V)))
+
+    return J
+
+J_0 = J_FR_list = J_PV_list = J(0)
