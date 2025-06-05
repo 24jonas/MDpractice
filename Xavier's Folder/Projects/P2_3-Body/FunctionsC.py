@@ -75,7 +75,7 @@ def Star_Positions(t):
     r2 = [(0.5)*np.cos(t), (0.5)*np.sin(t)]
     return r1, r2
 
-def Jacobai_Constant(ro, r1, r2, vo, t):
+def Jacobai_Constant(ro, r1, r2, vo):
     ja = (vo**2) - 1/(ro - r1) - 1/(ro - r2) - 2*ro*vo
     jo = np.sqrt((ja[0]**2)+(ja[1]**2))
     return jo
