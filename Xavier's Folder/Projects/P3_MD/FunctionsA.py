@@ -6,14 +6,14 @@ import numpy as np
 # Input Variables
 time_increment = 0.01
 number_of_increments = 10000
-object1_initial_x_position = 6.666
-object1_initial_y_position = 6.333
-object1_initial_x_velocity = 3.1
-object1_initial_y_velocity = 2.7
-object2_initial_x_position = 3.666
-object2_initial_y_position = 3.333
-object2_initial_x_velocity = 2.71828
-object2_initial_y_velocity = 3.1415926
+object1_initial_x_position = 7
+object1_initial_y_position = 6
+object1_initial_x_velocity = 0
+object1_initial_y_velocity = 0
+object2_initial_x_position = 3
+object2_initial_y_position = 5.5
+object2_initial_x_velocity = 10
+object2_initial_y_velocity = 0
 r1 = "Object 1 position"
 r2 = "Object 2 position"
 v1 = "Object 1 velocity"
