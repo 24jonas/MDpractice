@@ -5,8 +5,8 @@
 # Imports
 import numpy as np
 import matplotlib.pyplot as plt
-from Functions1 import *
-from Optimize1 import solutions
+from FunctionsA import *
+from OptimizeA import solutions
 
 # Cycle through solutions.
 for i in range(len(solutions)):

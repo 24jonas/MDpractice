@@ -1,11 +1,11 @@
-# Find the best pairing of initial heading and initial velocity to maintain a stable orbit in 'Orbit1'.
+# Find the best pairing of initial heading and initial velocity to maintain a stable orbit in 'OrbitA'.
 # Tests initial velocities between 0 and 2, and initial headings between 0 and 90 degrees.
 # There are other methods of doing this which I may try in the future.
 
 # Imports
 import numpy as np
 import matplotlib.pyplot as plt
-from Functions import *
+from FunctionsA import *
 
 # Generate combinations.
 combinations = []

@@ -1,18 +1,17 @@
-# Functions for 'Orbit2.py'.
+# Functions for 'OrbitC.py'.
 
 # Imports
 import numpy as np
 
 # Input Variables
-calculations = 100                 # unitless
+calculations = 5655                 # unitless
 time_unit = 0.005                   # seconds
-start_time = 0                      # seconds
 time_elapsed = 0                    # seconds
 object_initial_x_position = 0       # meters
 object_initial_y_position = 0.058   # meters
 initial_velocity_x = 0.49           # meters/second
 initial_velocity_y = 0              # meters/second
-star1_x_position = 0.5             # meters
+star1_x_position = -0.5             # meters
 star1_y_position = 0                # meters
 star2_x_position = 0.5              # meters
 star2_y_position = 0                # meters
@@ -55,13 +54,23 @@ def Acceleration(ro, r1, r2, m1, m2):
     ao = (-m1)*(ro - r1)/(mag1**3) + (-m2)*(ro - r2)/(mag2**3)
     return ao
 
-def Position_Verlet(ro, vo, ao, dt):
+def Position_VerletA(ro, vo, dt, r1, r2, m1, m2):
+    dt = dt/(0.74007895)
     ro = ro + (0.5)*vo*dt
+    ao = Acceleration(ro, r1, r2, m1, m2)
+    vo = vo + ao*dt
+    ro = ro + (0.5)*vo*dt
+    return ro, vo
+
+def Position_VerletB(ro, vo, dt, r1, r2, m1, m2):
+    dt = dt/(-1.70241438)
+    ro = ro + (0.5)*vo*dt
+    ao = Acceleration(ro, r1, r2, m1, m2)
     vo = vo + ao*dt
     ro = ro + (0.5)*vo*dt
     return ro, vo
 
 def Star_Positions(t):
     r1 = [(-0.5)*np.cos(t), (-0.5)*np.sin(t)]
-    r2 = [(-0.5)*np.cos(t), (-0.5)*np.sin(t)]
+    r2 = [(0.5)*np.cos(t), (0.5)*np.sin(t)]
     return r1, r2

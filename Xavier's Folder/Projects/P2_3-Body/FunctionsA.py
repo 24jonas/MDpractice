@@ -1,4 +1,4 @@
-# Functions for 'Orbit1.py'.
+# Functions for 'OrbitA.py'.
 
 # Imports
 import numpy as np
