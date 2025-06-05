@@ -15,12 +15,18 @@ vo = np.array([v_x, v_y])
 co = np.zeros((l,2))
 c1 = np.zeros((l,2))
 c2 = np.zeros((l,2))
+jc = np.zeros((l))
+jc_0 = np.zeros((l))
 
 # Construct the trajectory array.
+jo = Jacobai_Constant(ro, r1, r2, vo, t)
+jo_0 = jo
 for i in range(l):
     co[i] = ro
     c1[i] = r1
     c2[i] = r2
+    jc[i] = jo
+    jc_0[i] = jo_0
     r1, r2 = Star_Positions(t)
     ro, vo = Position_VerletA(ro, vo, dt, r1, r2, m1, m2)
     ro, vo = Position_VerletB(ro, vo, dt, r1, r2, m1, m2)

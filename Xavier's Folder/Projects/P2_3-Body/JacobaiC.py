@@ -3,7 +3,7 @@
 # Imports
 import matplotlib.pyplot as plt
 import numpy as np
-from OrbitB import jc, jo_0
+from OrbitC import jc, jo_0
 
 x = np.linspace(0, 1, 5655)
 y = jc - jo_0
