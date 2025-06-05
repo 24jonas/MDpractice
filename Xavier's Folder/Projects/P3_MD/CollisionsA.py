@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from FunctionsA import *
 
 # Adjust Variables
-l = 4000
+l = 5000
 co1 = np.zeros((l,2))
 co2 = np.zeros((l,2))
 
@@ -19,7 +19,7 @@ for i in range(l):
     if a == True:
         n1, n2 = Contact(dr, rm)
         v1, v2 = Components(v1, v2, n1, n2)     # Fix boundary behavior by using radius from center.
-    elif b == True:
+    elif b == True:                             # Weird collision behavior and acceleration.
         v1[0] = -v1[0]
     elif b == False:
         v1[1] = -v1[1]
