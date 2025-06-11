@@ -6,14 +6,14 @@ import numpy as np
 # Input Variables
 time_increment = 0.01
 number_of_increments = 10000
-object1_initial_x_position = 7
-object1_initial_y_position = 6
+object1_initial_x_position = 5
+object1_initial_y_position = 5
 object1_initial_x_velocity = 0
 object1_initial_y_velocity = 0
 object2_initial_x_position = 3
-object2_initial_y_position = 5.5
-object2_initial_x_velocity = 10
-object2_initial_y_velocity = 0
+object2_initial_y_position = 3
+object2_initial_x_velocity = 15
+object2_initial_y_velocity = 10
 r1 = "Object 1 position"
 r2 = "Object 2 position"
 v1 = "Object 1 velocity"
@@ -65,20 +65,28 @@ def Check1(r1, r2, cr):
         return False, dr
 
 def Check2(r1, blx, bly):
-    if r1[0] < or1 or r1[0] > blx-or1:
-        return True
-    elif r1[1] < or1 or r1[1] > bly-or1:
-        return False
+    if r1[0] < or1:
+        return True, True
+    elif r1[0] > blx-or1:
+        return True, False
+    elif r1[1] < or1:
+        return False, True
+    elif r1[1] > bly-or1:
+        return False, False
     else:
-        return None
+        return None, None
 
 def Check3(r2, blx, bly):
-    if r2[0] < or2 or r2[0] > blx-or2:
-        return True
-    elif r2[1] < or2 or r2[1] > bly-or2:
-        return False
+    if r2[0] < or2:
+        return True, True
+    elif r2[0] > blx-or2:
+        return True, False
+    elif r2[1] < or2:
+        return False, True
+    elif r2[1] > bly-or2:
+        return False, False
     else:
-        return None
+        return None, None
 
 def Position(r1, r2, v1, v2, dt):
     r1 = r1 + v1*dt
@@ -86,7 +94,7 @@ def Position(r1, r2, v1, v2, dt):
     return r1, r2
 
 def Contact(dr, rm):
-    n1 = Norm(dr)
+    n1 = dr
     n2 = rm@dr
     return n1, n2
 
