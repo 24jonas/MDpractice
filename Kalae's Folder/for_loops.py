@@ -15,3 +15,19 @@ for i in range(1,11):
     if i ==5:
         continue
     print(i)
+
+
+N =27
+particle_points = []
+for i in range(1,6,2):
+    if i == 6:
+        j = 6
+    for j in range(1,6,2):
+        if j == 3:
+            j += 0.5
+        if j == 5.5:
+            j = 3
+        for k in range(1,6,2):
+            particle_points.append((i, j, k))
+
+print(particle_points)
