@@ -44,6 +44,7 @@ vo = np.array([v_x, v_y])
 co = np.zeros((l,2))
 c1 = np.zeros((l,2))
 c2 = np.zeros((l,2))
+jc = np.zeros((l,2))
 
 # Functions
 def Acceleration(ro, r1, r2, m1, m2):
@@ -74,8 +75,18 @@ def Star_Positions(t):
     r1 = [(-0.5)*np.cos(t), (-0.5)*np.sin(t)]
     r2 = [(0.5)*np.cos(t), (0.5)*np.sin(t)]
     return r1, r2
-
+"""
 def Jacobai_Constant(ro, r1, r2, vo):
     ja = (vo**2) - 1/(ro - r1) - 1/(ro - r2) - 2*ro*vo
     jo = np.sqrt((ja[0]**2)+(ja[1]**2))
+    return jo
+"""
+def Jacobai_Constant(ro, r1, r2, vo):
+    vsqrd = vo[0]**2 +  vo[1]**2
+    dr1 = ro - r1
+    dr2 = ro - r2
+    rmag1 = np.sqrt(dr1[0]**2 + dr1[1]**2)
+    rmag2 = np.sqrt(dr2[0]**2 + dr2[1]**2)
+    last = 2*np.cross(ro,vo)
+    jo = vsqrd - 1/rmag1 - 1/rmag2 - last
     return jo
