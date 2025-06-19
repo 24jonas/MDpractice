@@ -19,7 +19,7 @@ jc = np.zeros((l))
 jc_0 = np.zeros((l))
 
 # Construct the trajectory array.
-jo = Jacobai_Constant(ro, r1, r2, vo, t)
+jo = Jacobai_Constant(ro, r1, r2, vo)
 jo_0 = jo
 for i in range(l):
     co[i] = ro

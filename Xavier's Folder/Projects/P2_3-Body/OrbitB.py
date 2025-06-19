@@ -19,7 +19,7 @@ jc = np.zeros((l))
 jc_0 = np.zeros((l))
 
 # Construct the trajectory array.
-jo = Jacobai_Constant(ro, r1, r2, vo, t)
+jo = Jacobai_Constant(ro, r1, r2, vo)
 jo_0 = jo
 for i in range(l):
     co[i] = ro
@@ -29,7 +29,7 @@ for i in range(l):
     jc_0[i] = jo_0
     r1, r2 = Star_Positions(t)
     ro, vo = Position_Verlet(ro, vo, dt, r1, r2, m1, m2)
-    jo = Jacobai_Constant(ro, r1, r2, vo, t)
+    jo = Jacobai_Constant(ro, r1, r2, vo)
     t += dt
 
 # Plot the trajectory.

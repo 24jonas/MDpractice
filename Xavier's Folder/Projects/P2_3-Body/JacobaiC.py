@@ -11,7 +11,7 @@ y = jc - jo_0
 plt.plot(x, y, label='Jacobai Constant', color='blue')
 plt.xlabel('x')
 plt.ylabel('y')
-plt.title('Jacobai Constant OrbitB')
+plt.title('Jacobai Constant OrbitC')
 plt.grid(True)
 plt.legend()
 plt.show()
