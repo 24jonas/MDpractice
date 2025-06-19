@@ -1,115 +1,115 @@
-import numpy as np
+import math
 import matplotlib.pyplot as plt
 
-
-
-# Parameters
-N = 27
-SX = SY = SZ = 6.0
+# Simulation Settings 
+box_size = 6.0
 dt = 0.005
-timesteps = 15000
-save_every = 10  # only save every 10 steps to reduce plotting data
+steps = 10000
+sample_per = 50
 
-# Lennard-Jones parameters (reduced units: epsilon = sigma = 1)
-def compute_forces(positions, box_size):
-    forces = np.zeros_like(positions)
+#Step 1: Initialize particles in a staggered checkerboard 
+particle_points = []
+for i in range(1, 6, 2):
+    for j in range(1, 6, 2):
+        for k in range(1, 6, 2):
+            if k == 3:
+                particle_points.append((i, j + 0.75, k))
+            else:
+                particle_points.append((i, j, k))
+
+N = len(particle_points)
+
+#   velocities zero 
+vx = [0.0] * N
+vy = [0.0] * N
+vz = [0.0] * N
+
+# energy trackers 
+kinetic_energy_list = []
+potential_energy_list = []
+
+# Step 4: Main Simulation Loop 
+for step in range(steps):
+    ax = [0.0] * N
+    ay = [0.0] * N
+    az = [0.0] * N
     potential_energy = 0.0
+    kinetic_energy = 0.0
+
+    # Lennard-Jones force calculation
     for i in range(N):
         for j in range(i + 1, N):
-            rij = positions[i] - positions[j]
-            rij -= box_size * np.round(rij / box_size)  # periodic BCs
-            r2 = np.dot(rij, rij)
-            if r2 < 3.0**2:  # cutoff
-                inv_r6 = 1.0 / r2**3
+            rx = particle_points[i][0] - particle_points[j][0]
+            ry = particle_points[i][1] - particle_points[j][1]
+            rz = particle_points[i][2] - particle_points[j][2]
+            r = math.sqrt(rx**2 + ry**2 + rz**2)
+
+            if r != 0:
+                inv_r6 = (1 / r)**6
                 inv_r12 = inv_r6**2
-                f = 48 * inv_r12 - 24 * inv_r6
-                force = f * rij / r2
-                forces[i] += force
-                forces[j] -= force
+                f_mag = 24 * (2 * inv_r12 - inv_r6) / r
+
+                fx = f_mag * (rx / r)
+                fy = f_mag * (ry / r)
+                fz = f_mag * (rz / r)
+
+                ax[i] += fx
+                ay[i] += fy
+                az[i] += fz
+
+                ax[j] -= fx
+                ay[j] -= fy
+                az[j] -= fz
+
                 potential_energy += 4 * (inv_r12 - inv_r6)
-    return forces, potential_energy
 
-# Initial positions in 3x3x3 checkerboard cube
-def initialize_positions():
-    pos = []
-    spacing = SX / 3.0
-    for x in range(3):
-        for y in range(3):
-            for z in range(3):
-                offset = ((x + y + z) % 2) * 0.2  # stagger
-                pos.append([x * spacing + offset,
-                            y * spacing + offset,
-                            z * spacing + offset])
-    return np.array(pos)
+    # Update velocity and position
+    new_positions = []
+    for i in range(N):
+        vx[i] += ax[i] * dt
+        vy[i] += ay[i] * dt
+        vz[i] += az[i] * dt
 
-# Initial velocities (Maxwell-Boltzmann-like, zero net momentum)
-def initialize_velocities():
-    velocities = np.random.randn(N, 3)
-    velocities -= np.mean(velocities, axis=0)  # zero total momentum
-    return velocities
+        kinetic_energy += 0.5 * (vx[i]**2 + vy[i]**2 + vz[i]**2)
 
-# Velocity Verlet integration
-positions = initialize_positions()
-velocities = initialize_velocities()
-box_size = np.array([SX, SY, SZ])
-forces, _ = compute_forces(positions, box_size)
+        # Update positions
+        x_new = particle_points[i][0] + vx[i] * dt
+        y_new = particle_points[i][1] + vy[i] * dt
+        z_new = particle_points[i][2] + vz[i] * dt
 
-kinetic_data = []
-potential_data = []
-total_data = []
-kinetic_avg = []
+        # Wall bounce conditions
+        if x_new <= 0 or x_new >= box_size:
+            vx[i] *= -1
+            x_new = max(0, min(x_new, box_size))
 
-cumulative_kinetic = 0
+        if y_new <= 0 or y_new >= box_size:
+            vy[i] *= -1
+            y_new = max(0, min(y_new, box_size))
 
-for step in range(timesteps):
-    # First half step
-    velocities += 0.5 * dt * forces
-    positions += dt * velocities
-    positions %= box_size  # periodic BCs
+        if z_new <= 0 or z_new >= box_size:
+            vz[i] *= -1
+            z_new = max(0, min(z_new, box_size))
 
-    # Compute new forces
-    forces, potential = compute_forces(positions, box_size)
+        new_positions.append((x_new, y_new, z_new))
 
-    # Second half step
-    velocities += 0.5 * dt * forces
+    particle_points = new_positions
+    if step % 20 == 0: 
+    
+        kinetic_energy_list.append(kinetic_energy)
+        potential_energy_list.append(potential_energy)
 
-    # Energies
-    kinetic = 0.5 * np.sum(velocities**2)
-    total = kinetic + potential
-
-    cumulative_kinetic += kinetic
-    kinetic_avg_val = cumulative_kinetic / (step + 1)
-
-    if step % save_every == 0:
-        kinetic_data.append(kinetic)
-        potential_data.append(potential)
-        total_data.append(total)
-        kinetic_avg.append(kinetic_avg_val)
-
-# Plotting
-time = np.arange(0, timesteps, save_every)
-
+#plotting
 plt.figure(figsize=(10, 6))
-plt.plot(time, total_data, label="Total energy", color='orchid')
-plt.plot(time, kinetic_data, label="Kinetic energy", color='mediumseagreen')
-plt.plot(time, potential_data, label="Potential energy", color='skyblue')
-plt.plot(time, kinetic_avg, label="Avg. Kinetic energy", color='orange', linestyle='--')
-plt.xlabel("Time step")
+plt.plot(kinetic_energy_list, label="Kinetic Energy", color='blue')
+plt.plot(potential_energy_list, label="Potential Energy", color='red')
+plt.plot(
+    [k + v for k, v in zip(kinetic_energy_list, potential_energy_list)],
+    label="Total Energy", linestyle='--', color='purple'
+)
+plt.xlabel("Time Step")
 plt.ylabel("Energy")
-plt.title("Energy vs Time in MD Simulation")
+plt.title("Energy vs. Time (Particles Start from Rest)")
 plt.legend()
+plt.grid(True)
 plt.tight_layout()
 plt.show()
-
-"""
-
-# Constants
-N= 27
-SX =6.0
-SY = 6.0
-SZ = 6.0
-dt = 0.005
-timesteps = 15000
-save_every = 10  
-
-"""

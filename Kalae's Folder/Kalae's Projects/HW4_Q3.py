@@ -41,6 +41,7 @@ for i in range(1,6,2):
             else:
                 particle_points.append((i, j, k))
 
+print(len(particle_points), "particles in total")
 
 
 if N == 64:
@@ -73,16 +74,14 @@ if N == 64:
 
 
 
-
+    particle_points = []
     for i in range(1, 10, 3):
         for j in range(1, 10, 3):
             for k in range(1, 10, 3):
                 if k == 4:
-                    j += 1.5
+                    particle_points.append((i, j+1.5, k))
+                elif k == 1 or k == 7:
                     particle_points.append((i, j, k))
-                    j = j - 1.5
-                else:
-                   particle_points.append((i, j, k))
 
 
 

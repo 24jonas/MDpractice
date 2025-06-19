@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 #constants
              
-n_bin = 1
+n_bin = [0.0]*100
 dr = 0.05
 B(n_bin) = []
 
