@@ -1,4 +1,5 @@
-# 3d with variable molecules in cubic pattern. LJ collision dynamics except for classical dynamics with walls. Does not use the VV algorithm.\
+# 3d with variable molecules in cubic pattern. LJ collision dynamics except for classical dynamics with walls. Does not use the VV algorithm.
+# This file plots radial particle density based on 'CollisionsC.py'.
 # This program should be run with the initial conditions in 'FunctionsC.py' of q = 27, dt = 0.01, l = 10000, io = 0.5, iv = 0, m = 0.1, ro = 0.5
 # bf = 5, isn = 2, sl = 100, el = 100, and bs = 0.5. Running other initial conditions may cause an error.
 
