@@ -1,3 +1,4 @@
+
 import math
 import matplotlib.pyplot as plt
 
@@ -5,9 +6,9 @@ import matplotlib.pyplot as plt
 box_size = 6.0
 dt = 0.005
 steps = 10000
-sample_per = 50
+sample_per = 10  # (this will be used for plotting intervals)
 
-#Step 1: Initialize particles in a staggered checkerboard 
+# Step 1: Initialize particles in a staggered checkerboard 
 particle_points = []
 for i in range(1, 6, 2):
     for j in range(1, 6, 2):
@@ -19,16 +20,16 @@ for i in range(1, 6, 2):
 
 N = len(particle_points)
 
-#   velocities zero 
+# Initial velocities: all zero
 vx = [0.0] * N
 vy = [0.0] * N
 vz = [0.0] * N
 
-# energy trackers 
+# Energy trackers
 kinetic_energy_list = []
 potential_energy_list = []
 
-# Step 4: Main Simulation Loop 
+# Main Simulation Loop
 for step in range(steps):
     ax = [0.0] * N
     ay = [0.0] * N
@@ -57,7 +58,7 @@ for step in range(steps):
                 ay[i] += fy
                 az[i] += fz
 
-                ax[j] -= fx
+                ax[j] -= fx  # Apply Newton's third law
                 ay[j] -= fy
                 az[j] -= fz
 
@@ -90,15 +91,15 @@ for step in range(steps):
             vz[i] *= -1
             z_new = max(0, min(z_new, box_size))
 
-        new_positions.append((x_new, y_new, z_new))
+        new_positions.append((x_new, y_new, z_new))  # Correct list
 
-    particle_points = new_positions
-    if step % 20 == 0: 
-    
+    particle_points = new_positions  # Update all positions at once
+
+    # Sample energies at regular intervals
+    if step % sample_per == 0:
         kinetic_energy_list.append(kinetic_energy)
         potential_energy_list.append(potential_energy)
-
-#plotting
+# Plotting
 plt.figure(figsize=(10, 6))
 plt.plot(kinetic_energy_list, label="Kinetic Energy", color='blue')
 plt.plot(potential_energy_list, label="Potential Energy", color='red')
@@ -106,10 +107,13 @@ plt.plot(
     [k + v for k, v in zip(kinetic_energy_list, potential_energy_list)],
     label="Total Energy", linestyle='--', color='purple'
 )
-plt.xlabel("Time Step")
+plt.xlabel("Sample Index")
 plt.ylabel("Energy")
 plt.title("Energy vs. Time (Particles Start from Rest)")
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
 plt.show()
+
+
+

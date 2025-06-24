@@ -29,7 +29,7 @@ color_1=(255, 255, 255)
 particle2x= []
 x2=300
 y2=600
-vx2= 40
+vx2= 4000
 radius2=20
 color_2=(0, 0, 255)
 
@@ -110,7 +110,7 @@ while running:
     if times_run > steps:
         vx1,vx2 = 0,0
 
-    if times_run == 50*n:
+    if times_run == 1*n:
         n+=1
         particle1x.append(x1)
         particle2x.append(x2)
