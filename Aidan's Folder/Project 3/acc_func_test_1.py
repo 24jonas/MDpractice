@@ -14,15 +14,18 @@ def acc(R):
         raise ValueError("Dimensions of simularion border and R don't match!")
 
     for i in range(num_particles):
+        R_i = R[i]
         for j in range(i + 1, num_particles):
-            R_ij = R[i] - R[j]
+            R_ij = R_i - R[j]
             R_ij = R_ij - borders_arr * np.round(R_ij / borders_arr)
-            r = np.linalg.norm(R_ij)
+            r = np.dot(R_ij, R_ij)
             if r == 0:
                 continue
 
-            r_term = (1 / r) ** 6
-            F_mag = 24 * (2 * r_term ** 2 - r_term) / r ** 2    
+            r2_inv =  1.0 / r
+            r6 = r2_inv ** 3
+            r12 = r6 ** 2
+            F_mag = 24 * (2 * r12 - r6) * r2_inv
             F_vec = F_mag * R_ij
 
             A[i] += F_vec
