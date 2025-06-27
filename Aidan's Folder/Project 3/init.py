@@ -1,10 +1,23 @@
 import numpy as np
 
-### Initial Variables and Constnats Declaration ###
+### Initial Variables and Constants Declaration ###
+
+## Inputs ##
+get_input = True
+while(get_input):
+    Dim_check = input("Enter 2 for 2D, 3 for 3D, or 0 to exit.\n")
+    if(Dim_check == "2"):
+        print("Starting 2D Simulation.")
+        get_input = False
+    elif(Dim_check == "3"):
+        print("Starting 3D Simulation.")
+        get_input = False
+    elif(Dim_check == "0"):
+        print("Exiting Simulation.")
+        exit()
 
 ## 2D init ##
-Two_Dim = True
-if (Two_Dim):
+if (Dim_check == "2"):
     R_arr = np.array([[3.0, 6.0],
                      [7.0, 6.0]])
 
@@ -14,8 +27,8 @@ if (Two_Dim):
 
 ## 3D init ##
 def initialize_lattice(border):
-    layers = 3
-    spacing = border[0] / layers ## Assuming cubic borders
+    layers = 4
+    spacing = border[0] / (layers + 1) ## Assuming cubic borders
     R = []
 
     for i in range(layers):
@@ -31,18 +44,27 @@ def initialize_lattice(border):
 
     return R_arr
 
-Three_dim = False
-if (Three_dim):
+if (Dim_check == "3"):
     SX = 6.0
     SY = 6.0
     SZ = 6.0
     border = np.array([SX, SY, SZ])
     R_arr = initialize_lattice(border)
-    V_arr = np.zeros_like(R_arr)
+    np.random.seed(0)
+    V_arr = np.random.normal(0, 0.5, size = R_arr.shape)
+    V_arr -= V_arr.mean(axis = 0)
+
+## g(r) config ##
+dr = 0.05
+nbin = 100
+B = np.zeros(nbin)
+equil_step = 5000
+sample_rate = 20
+gr_sample_count = 0
 
 ## Global init ##
-dt = 0.01
-num_step = 15000
+dt = float(input("Input dt:\n"))
+num_step = int(input("Input num_step:\n"))
 R_sto = [R_arr.copy()]
 V_sto = [V_arr.copy()]
 

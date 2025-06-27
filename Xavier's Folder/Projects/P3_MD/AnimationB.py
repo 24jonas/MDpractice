@@ -1,4 +1,4 @@
-# Animation for 'CollisionsB.py'. The animation code was written by ChatGPT.
+# Animation for 'CollisionsB.py'. The animation code was written by ChatGPT. It is not my own.
 
 import numpy as np
 import matplotlib.pyplot as plt

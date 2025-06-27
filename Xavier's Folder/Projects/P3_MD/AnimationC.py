@@ -1,4 +1,4 @@
-# Animation for 'CollisionsC.py'. The animation code was written by ChatGPT.
+# Animation for 'CollisionsC.py'. The animation code was written by ChatGPT. It is not my own.
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,7 +9,7 @@ from CollisionsC import rx, ry, rz, l, ro, blx, q
 
 # === Adjustable parameters ===
 num_objects = q
-radius = ro*5               # Radius of each object
+radius = ro                 # Radius of each object
 cube_bounds = [0, blx]      # Min and max for x, y, z axes
 
 # === Example data === (Replace with your actual data)

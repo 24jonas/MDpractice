@@ -8,7 +8,7 @@ number_of_objects = 27      # Must have an integer cube root.
 time_increment = 0.01
 number_of_increments = 10000
 initial_offset = 0.5
-initial_velocity = 0        # In each dimension.
+initial_velocity = 1        # In each dimension.
 object_mass = 0.1
 object_radius = 0.5
 buffer = 5
@@ -19,6 +19,10 @@ box_y_length = box_length
 box_z_length = box_length
 speed_limit = 100
 energy_limit = 100
+bin_size = 0.5
+begin_radii = 1000
+density_domain = 100
+abbreviated_density_domain = 20
 rx = "X Position Array"
 ry = "Y Position Array"
 rz = "Z Position Array"
@@ -31,6 +35,10 @@ ke = "Kinetic Energy"
 ate = "Average Total Energy"
 ape = "Average Potential Energy"
 ake = "Average Kinetic Energy"
+bb = "nbin Array"
+rl = "Radii List"
+rpd = "Density As A Functino Of Radius"
+arpd = "Abbrevaited RPD"
 
 # Rename Variables
 q = number_of_objects
@@ -48,6 +56,10 @@ bly = box_y_length
 blz = box_z_length
 sl = speed_limit
 el = energy_limit
+bs = bin_size
+br = begin_radii
+dd = density_domain
+add = abbreviated_density_domain
 rx = np.zeros((l,q))
 ry = np.zeros((l,q))
 rz = np.zeros((l,q))
@@ -60,6 +72,10 @@ ke = np.zeros((l,1))
 ate = np.zeros((l,1))
 ape = np.zeros((l,1))
 ake = np.zeros((l,1))
+bb = np.zeros(dd+1)
+rl = []
+rpd = np.zeros((dd+1,2))
+arpd = np.zeros((add+1,2))
 
 # Functions
 def Wall_x(rx, vx, ro, i):
@@ -134,3 +150,8 @@ def Kinetic_Energy(vx, vy, vz, m, i, w3):
     mag = np.linalg.norm(v)
     k = 0.5*m*mag**2
     return k
+
+def Radial_Density(bb, nbin, bs, q, blx):
+    ppr = bb[nbin]/(q*4*(np.pi)*bs*(nbin*bs)**2)
+    gr = (blx**3)*ppr/q
+    return gr
