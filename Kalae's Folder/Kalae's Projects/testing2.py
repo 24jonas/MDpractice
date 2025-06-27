@@ -33,8 +33,11 @@ for i in range(1, 6, 2):
                 particle_points.append((i, j + 0.75, k))
             else:
                 particle_points.append((i, j, k))
+
+
+
 #for i in range(steps):
-    for step in range(100):
+for step in range(100):
 
         
         point  = step % 27
