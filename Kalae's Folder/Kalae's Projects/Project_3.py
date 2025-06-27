@@ -14,13 +14,13 @@ m_2 = 1/2
 #theta_0= [np.pi/1.8, np.pi/2, np.pi/2.2, np.pi/2.4, np.pi/1.7, np.pi/2.3, np.pi/2.1]
 
 
-v_0=1.195
-theta_0 = np.pi/2.5 # Initial angle of the velocity of the planet
+v_0=1.9
+theta_0 = np.pi/3.7 # Initial angle of the velocity of the planet
 v_x = [v_0*np.cos(theta_0)]  # Initial x velocity
 v_y = [v_0*np.sin(theta_0)]  # Initial y velocity
 v_001 = [v_x, v_y]  # Initial velocity vector
-steps = 2000
-dt = 0.001
+steps = 20000
+dt = 0.01
 x = [0]  # Initial x position
 y = [0]  # Initial y position
 d_1 = np.linalg.norm(np.array(r_1) - np.array([x[0], y[0]]))  # Distance to star 1
