@@ -55,14 +55,17 @@ for step in range(100):
             ry = particle_points[origin_particle][1] - particle_points[point][1]
             rz = particle_points[origin_particle][2] - particle_points[point][2]
         
-            r_xj.append(rx**2 + ry**2+rz**2)
+            r_xj.append((rx**2 + ry**2+rz**2)**(0.5))
 
 
             nbins.append(int(r_xj[counter]/dr) +1)
-            B_nbin[counter] = nbins[counter]+counter
+            B_nbin[counter] = nbins[counter]+1
             r_values.append(nbins[counter]*dr)
 
-            shell_vol = 4*np.pi*((dr*(counter+1))**3-(dr*counter)**3)/3
+            r_outer = (counter+1)*dr
+            r_inner = counter*dr
+
+            shell_vol = 4*np.pi*(r_outer**3-r_inner**3)/3
 
             g_r.append((shell_vol)*(B_nbin[counter])/(Num_particles**2 * 4*np.pi*((r_values[counter]*dr)**2) * dr))
             counter += 1
