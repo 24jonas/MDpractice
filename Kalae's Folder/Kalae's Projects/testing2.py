@@ -12,15 +12,18 @@ steps = 100
 dr =0.05
 Num_particles=27
 box_length = 6
-Volume = box_length**3
+Volume = box_length**2
 origin_particle =0
+counter = 0
+nbin = 100
 
 
 # arrays
-B_nbin = [0]
+B_nbin =  np.zeros(nbin)
 r_xj = []
 r_values = []
-g_r = [] # equivalent to (V/N)* p(r)
+g_r = [] 
+nbins = []                # equivalent to (V/N)* p(r)
  
 
 # create the particle points.
@@ -45,22 +48,29 @@ for step in range(100):
         if point == 0:
             origin_particle +=1
 
-        print("j:", step, "len(particle_points):", len(particle_points))
-        rx = particle_points[origin_particle][0] - particle_points[point][0]
-        ry = particle_points[origin_particle][1] - particle_points[point][1]
+        if origin_particle != point:
+             
+            print("j:", point, "origin_particle", origin_particle)
+            rx = particle_points[origin_particle][0] - particle_points[point][0]
+            ry = particle_points[origin_particle][1] - particle_points[point][1]
         
-        r_xj.append((rx**2 + ry**2)**(0.5))
-
-        nbin = int(r_xj[step]/dr) +1
-        B_nbin.append((nbin+1)+B_nbin[step-1])    
-        r_values.append(nbin+step)
-
-        g_r.append((Volume/Num_particles)*(B_nbin[step])/(Num_particles*4*np.pi*(r_values[step]**2) * dr))
+            r_xj.append((rx**2 + ry**2)**(0.5))
 
 
+            nbins.append(int(r_xj[counter]/dr) +1)
+            B_nbin[counter] = nbins[counter]+counter
+            r_values.append(nbins[counter]*dr)
 
-plt.figure(figsize=(8, 5))
-plt.plot(r_values, g_r, label="g(r)", color='green')
+            shell_vol = 4*np.pi*((dr*(counter+1))**3-(dr*counter)**3)/3
+
+            g_r.append((shell_vol)*(B_nbin[counter])/(Num_particles**2 * 4*np.pi*((r_values[counter]*dr)**2) * dr))
+            counter += 1
+
+
+
+
+plt.figure(figsize=(6, 5))
+plt.plot(r_values, g_r, label="g(r)", color='blue')
 plt.xlabel("r")
 plt.ylabel("g(r)")
 plt.title("Pair Correlation Function g(r)")

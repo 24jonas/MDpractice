@@ -1,58 +1,51 @@
-import math
+import numpy as np
 import matplotlib.pyplot as plt
-import numpy as np 
 
+# Constants
+dr = 0.05
 box_size = 6.0
-steps = 100
-dr =0.05
-Num_particles=27
-box_length = 6
-Volume = box_length**3
-origin_particle =0
+num_particles = 27
+volume = box_size**3
+nbins = int(box_size / 2 / dr)
+B = np.zeros(nbins)
 
+# Create staggered particle points
 particle_points = []
 for i in range(1, 6, 2):
     for j in range(1, 6, 2):
         for k in range(1, 6, 2):
-            y_val = j + 0.75 if k == 3 else j
-            particle_points.append((i, y_val, k))
+            if k == 3:
+                particle_points.append((i, j + 0.75, k))
+            else:
+                particle_points.append((i, j, k))
 
-Num_particles = len(particle_points)
-origin_particle = 0
-r_xj = []
-B_nbin = [0]
-r_values = []
-g_r = []
+particle_points = np.array(particle_points)
 
-for step in range(100):
-    point = step % Num_particles
+# Accumulate g(r) over many steps
+steps = 100
+for step in range(steps):
+    # Loop over unique pairs only (i < j)
+    for i in range(num_particles):
+        for j in range(i + 1, num_particles):
+            dx = particle_points[i][0] - particle_points[j][0]
+            dy = particle_points[i][1] - particle_points[j][1]
+            
 
-    if point == 0 and step != 0:
-        origin_particle += 1
-        if origin_particle >= Num_particles:
-            origin_particle = 0
+            r = np.sqrt(dx**2 + dy**2)
+            bin_index = int(r / dr)
 
-    rx = particle_points[origin_particle][0] - particle_points[point][0]
-    ry = particle_points[origin_particle][1] - particle_points[point][1]
-    r = (rx**2 + ry**2)**0.5
-    r_xj.append(r)
+            if bin_index < nbins:
+                B[bin_index] += 2  # count both (i,j) and (j,i)
 
-    nbin = int(r / dr) + 1
-    if step == 0:
-        B_nbin.append(nbin + 1)
-    else:
-        B_nbin.append((nbin + 1) + B_nbin[step])
+# Normalize to get g(r)
+r_vals = np.arange(nbins) * dr
+shell_volumes = 4 * np.pi * (r_vals**2) * dr
+density = num_particles / volume
+g_r = B / (steps * num_particles * density * shell_volumes)
 
-    r_values.append(nbin + step)
-
-    # Avoid division by zero
-    if r_values[step] != 0:
-        g_r.append((Volume / Num_particles) * (B_nbin[step + 1]) / (Num_particles * 4 * np.pi * (r_values[step] ** 2) * dr))
-    else:
-        g_r.append(0)
-
-    plt.figure(figsize=(8, 5))
-plt.plot(r_values, g_r, label="g(r)", color='green')
+# Plot
+plt.figure(figsize=(6, 5))
+plt.plot(r_vals, g_r, label="g(r)", color='blue')
 plt.xlabel("r")
 plt.ylabel("g(r)")
 plt.title("Pair Correlation Function g(r)")
