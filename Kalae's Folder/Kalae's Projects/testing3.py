@@ -151,8 +151,8 @@ for step in range(100):
 
 
             #p_r = (B_nbin[counter])/(Num_particles * 4*np.pi*((r_values[counter]*dr)**2) * dr)
-
-            p_r = (B_nbin[counter])/(Num_particles * 4*np.pi*((nbin*dr)**2) * dr)
+            nbin
+            p_r = (B_nbin[counter])/(Num_particles * 4*np.pi*((nbin*dr)**3) * dr)
             g_r.append(((shell_vol)/Num_particles)*p_r)
             counter += 1
 
