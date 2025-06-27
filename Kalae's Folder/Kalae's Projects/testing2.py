@@ -53,8 +53,9 @@ for step in range(100):
             print("j:", point, "origin_particle", origin_particle)
             rx = particle_points[origin_particle][0] - particle_points[point][0]
             ry = particle_points[origin_particle][1] - particle_points[point][1]
+            rz = particle_points[origin_particle][2] - particle_points[point][2]
         
-            r_xj.append((rx**2 + ry**2)**(0.5))
+            r_xj.append(rx**2 + ry**2+rz**2)
 
 
             nbins.append(int(r_xj[counter]/dr) +1)
