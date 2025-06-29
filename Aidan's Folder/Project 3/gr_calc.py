@@ -11,4 +11,4 @@ def update_gr(R, B, dr, nbin, border):
 
     bin_indices = (r_vals / dr).astype(int)
     valid = bin_indices < nbin
-    np.add.at(B, bin_indices[valid], 1)
+    np.add.at(B, bin_indices[valid], 2)

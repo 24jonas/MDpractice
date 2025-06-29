@@ -1,4 +1,4 @@
-from acc_func_test_2 import *
+from acc_func import *
 import numpy as np
 from init import border
 

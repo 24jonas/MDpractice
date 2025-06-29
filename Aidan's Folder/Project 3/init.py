@@ -27,7 +27,7 @@ if (Dim_check == "2"):
 
 ## 3D init ##
 def initialize_lattice(border):
-    layers = 4
+    layers = int(input("Input number of particles as cube root: "))
     spacing = border[0] / (layers + 1) ## Assuming cubic borders
     R = []
 
@@ -63,8 +63,8 @@ sample_rate = 20
 gr_sample_count = 0
 
 ## Global init ##
-dt = float(input("Input dt:\n"))
-num_step = int(input("Input num_step:\n"))
+dt = float(input("Input dt: "))
+num_step = int(input("Input num_step: "))
 R_sto = [R_arr.copy()]
 V_sto = [V_arr.copy()]
 

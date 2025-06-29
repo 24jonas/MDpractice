@@ -1,30 +1,28 @@
 import numpy as np
-
 from init import border
 
 def acc(R):
-
-    num_particles, dim = R.shape
+    dim = R.shape[1]
     A = np.zeros_like(R)
     borders_arr = np.array(border)
 
-    if (borders_arr.size == 1):
+    if borders_arr.size == 1:
         borders_arr = np.full(dim, borders_arr.item())
-    elif (borders_arr.size != dim):
-        raise ValueError("Dimensions of simularion border and R don't match!")
+    elif borders_arr.size != dim:
+        raise ValueError("Dimensions of border and R don't match")
 
-    for i in range(num_particles):
-        for j in range(i + 1, num_particles):
-            R_ij = R[i] - R[j]
-            R_ij = R_ij - borders_arr * np.round(R_ij / borders_arr)
-            r = np.linalg.norm(R_ij)
-            if r == 0:
-                continue
+    R_ij = R[:, np.newaxis, :] - R[np.newaxis, :, :]  # Basically makes a rank 3 tensor to calculate the distance matrix with
+    R_ij -= borders_arr * np.round(R_ij / borders_arr) # Checks if the nearest particle is across the box border or not
+    R_ij_sq = np.sum(R_ij ** 2, axis = -1)
+    np.fill_diagonal(R_ij_sq, np.inf) # Will result in diagonal being zero without causeing div by zero error later
 
-            r_term = (1 / r) ** 6
-            F_mag = 24 * (2 * r_term ** 2 - r_term) / r ** 2    
-            F_vec = F_mag * R_ij
+    r2_inv = 1.0 / R_ij_sq
+    r6 = r2_inv ** 3
+    r12 = r6 ** 2
+    F_mag = 24 * (2 * r12 - r6) * r2_inv
+    np.fill_diagonal(F_mag, 0.0)
+    F_vec = F_mag[:,:, np.newaxis] * R_ij
 
-            A[i] += F_vec
-            A[j] -= F_vec
+    A = np.sum(F_vec, axis = 1)
+
     return A
