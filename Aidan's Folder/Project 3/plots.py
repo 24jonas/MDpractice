@@ -54,14 +54,22 @@ def plot_vel(V_sto, dims):
     plt.legend()
 
 # Plot Energies
-def plot_energy(KE_sto, PE_sto, E_sto):
-    plt.subplot(1,3,3)
+def plot_energy(KE_sto, PE_sto, E_sto, subplt = True):
+    if(subplt):
+        plt.subplot(1,3,3)
+    else:
+        plt.figure(figsize = (8, 5))
     t = np.arange(len(KE_sto)) * sample_rate  # steps, not time
     plt.plot(t, KE_sto, label = 'Kinetic')
     plt.plot(t, PE_sto, label = 'Potential')
     plt.plot(t, E_sto, label = 'total')
     plt.title("Energies")
     plt.legend()
+    plt.grid(True)
+
+    if not (subplt):
+        plt.tight_layout
+        plt.show()
 
 # Plot g(r)
 def plot_gr(r_vals, g):
@@ -126,8 +134,48 @@ def animate_2D(R_sto, border, dt, num_step):
 
     plt.show()
 
+# 3D Animation
+def animate_3D(R_sto, border, dt, num_step):
+    fig = plt.figure()
+    ax = fig.add_subplot(projection = '3d')
+    ax.set_title("3D Animation")
+    ax.set_xlim(0,border[0])
+    ax.set_ylim(0, border[1])
+    ax.set_zlim(0, border[2])
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    x = [0, border[0]]
+    y = [0, border[1]]
+    z = [0, border[2]]
+    for s, e in combinations(product(x, y, z), 2):
+        if sum(np.abs(np.array(s) - np.array(e)) > 0) == 1:
+            ax.plot(*zip(s, e), color='black', linewidth=0.5)
+    scat = ax.scatter([],[],[], s = 30, c = 'royalblue')
+
+    def init():
+        scat._offsets3d = ([], [], [])
+        return scat,
+
+    def update(frame):
+        pos = R_sto[frame]
+        scat._offsets3d = (pos[:, 0], pos[:, 1], pos[:, 2])
+        return scat,
+
+    ## Puts it in 'real time', but also more demanding
+    ##sim_time = num_step * dt
+    ##num_frames = len(R_sto)
+    ##interval = (sim_time * 1000) / (num_frames)
+
+    ## Only checking every fifth frame makes the animation faster
+    num_frames = range(0, len(R_sto), 5)
+    interval = 20
+
+    anim = FuncAnimation(fig, update, frames=num_frames, init_func=init, blit=False, interval=interval)
+    plt.show()
+
 def plot_master(R_sto, V_sto, KE_sto, PE_sto, E_sto, border, r_vals, g, dt, num_step, dim_check, R_arr):
-    if dim_check == '2':
+    if dim_check == 2:
         plt.figure(figsize=(18, 5))
         plot_trajectories(R_sto, border, dim_check, R_arr)
         plot_vel(V_sto, R_sto.shape[2])
@@ -139,5 +187,6 @@ def plot_master(R_sto, V_sto, KE_sto, PE_sto, E_sto, border, r_vals, g, dt, num_
         animate_2D(R_sto, border, dt, num_step)    
     else:
         plot_trajectories(R_sto, border, dim_check, R_arr)
+        plot_energy(KE_sto, PE_sto, E_sto, False)
         plot_gr(r_vals, g)
-        print("3D animation will go here.")
+        animate_3D(R_sto, border, dt, num_step)

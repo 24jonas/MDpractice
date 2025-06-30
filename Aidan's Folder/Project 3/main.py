@@ -2,7 +2,7 @@ from VV_func import verlet
 from energy import kinetic, potential
 from init import *
 from plots import *
-from gr_calc import update_gr
+from gr_calc import update_gr, normalize_gr
 
 R = R_arr.copy()
 V = V_arr.copy()
@@ -30,30 +30,12 @@ for i in range(num_step):
     if i % (num_step // 10) == 0:
         print(f"Progress: {int(i / num_step * 100)}%...")
 
-# g(r) Normalization
-## Move to plots, no need to keep here for 2d case.
-V = np.prod(border) # Calculate volume
-N = len(R_arr)
-rho = N / V
-r_vals = (np.arange(nbin) + 0.5) * dr # +0.5 instead of +1.0 to get to middle of bin
-g = np.zeros_like(B)
-
-for n in range(nbin):
-    if (Dim_check == '2'):
-        shell_vol = 4 * np.pi * (r_vals[n] ** 2) * dr
-    else:
-        shell_vol = 4 * np.pi * ((dr * (n + 1)) ** 3 - (dr * n) ** 3) / 3
-    denom = gr_sample_count * N * shell_vol * rho
-    if denom > 0:
-        g[n] = B[n] / denom
-    else:
-        g[n] = 0
-
 # Preparing for plotting
 R_sto = np.array(R_sto)
 V_sto = np.array(V_sto)
-## 3D Compatibility
-dims = R_sto.shape[2]
+## g(r) Normalization
+r_vals, g = normalize_gr(B, dr, nbin, gr_sample_count, R_arr, border, Dim_check)
+
 
 plot_master(R_sto, V_sto, KE_sto, PE_sto, E_sto, border, r_vals, g, dt, num_step, Dim_check, R_arr)
 
