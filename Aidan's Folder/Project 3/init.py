@@ -1,5 +1,4 @@
 import numpy as np
-
 ### Initial Variables and Constants Declaration ###
 
 ## Inputs ##
@@ -28,7 +27,7 @@ if (Dim_check == "2"):
 ## 3D init ##
 def initialize_lattice(border):
     layers = int(input("Input number of particles as cube root: "))
-    spacing = border[0] / (layers + 1) ## Assuming cubic borders
+    spacing = border[0] / (layers) ## Assuming cubic borders
     R = []
 
     for i in range(layers):
@@ -41,7 +40,6 @@ def initialize_lattice(border):
                 R.append(R_val)
                 
     R_arr = np.array(R)
-
     return R_arr
 
 if (Dim_check == "3"):
@@ -59,7 +57,7 @@ dr = 0.05
 nbin = 100
 B = np.zeros(nbin)
 equil_step = 5000
-sample_rate = 20
+sample_rate_gr = 20
 gr_sample_count = 0
 
 ## Global init ##
@@ -67,5 +65,6 @@ dt = float(input("Input dt: "))
 num_step = int(input("Input num_step: "))
 R_sto = [R_arr.copy()]
 V_sto = [V_arr.copy()]
+sample_rate = int(input("Sample Rate: "))
 
 
