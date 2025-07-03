@@ -1,10 +1,29 @@
 import numpy as np
+### Initial Variables and Constants Declaration ###
 
-### Initial Variables and Constnats Declaration ###
+## Inputs ##
+def get_input(mesg, default, cast_func):
+    inp = input(f"{mesg} (default: {default}): ")
+    if (inp.strip() == ''):
+        return default
+    else:
+        return cast_func(inp)
+while(True):
+    Dim_check = input("Enter 2 for 2D, 3 for 3D, or 0 to exit.\n")
+    if(Dim_check == "2"):
+        print("Starting 2D Simulation.")
+        Dim_check = 2
+        break
+    elif(Dim_check == "3"):
+        print("Starting 3D Simulation.")
+        Dim_check = 3
+        break
+    elif(Dim_check == "0"):
+        print("Exiting Simulation.")
+        exit()
 
 ## 2D init ##
-Two_Dim = True
-if (Two_Dim):
+if (Dim_check == 2):
     R_arr = np.array([[3.0, 6.0],
                      [7.0, 6.0]])
 
@@ -14,8 +33,8 @@ if (Two_Dim):
 
 ## 3D init ##
 def initialize_lattice(border):
-    layers = 3
-    spacing = border[0] / layers ## Assuming cubic borders
+    layers = int(input("Input number of particles as cube root: "))
+    spacing = border[0] / (layers) ## Assuming cubic borders
     R = []
 
     for i in range(layers):
@@ -28,22 +47,31 @@ def initialize_lattice(border):
                 R.append(R_val)
                 
     R_arr = np.array(R)
-
     return R_arr
 
-Three_dim = False
-if (Three_dim):
+if (Dim_check == 3):
     SX = 6.0
     SY = 6.0
     SZ = 6.0
     border = np.array([SX, SY, SZ])
     R_arr = initialize_lattice(border)
-    V_arr = np.zeros_like(R_arr)
+    np.random.seed(0)
+    V_arr = np.random.normal(0, 0.5, size = R_arr.shape)
+    V_arr -= V_arr.mean(axis = 0)
+
+## g(r) config ##
+dr = 0.05
+nbin = 100
+B = np.zeros(nbin)
+equil_step = 5000
+sample_rate_gr = 20
+gr_sample_count = 0
 
 ## Global init ##
-dt = 0.01
-num_step = 15000
+dt = get_input("Input dt", 0.01, float)
+num_step = get_input("Input num_step", 10000, int)
 R_sto = [R_arr.copy()]
 V_sto = [V_arr.copy()]
+sample_rate = get_input("Sample Rate", 10, int)
 
 

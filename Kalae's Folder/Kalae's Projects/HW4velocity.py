@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 n=1
 steps_list=[]
 #Particle 1
-particle1x= []
+velocity1= []
 x1=700
 y1=600
 vx1= 0
@@ -26,13 +26,15 @@ radius1=20
 color_1=(255, 255, 255)
 
 #Particle 2
-particle2x= []
+velocity2= []
 x2=300
 y2=600
-vx2= 4000
+vx2= 400
 radius2=20
 color_2=(0, 0, 255)
 
+#total energy
+energy_total= []
 
 
 rate =100
@@ -57,8 +59,8 @@ screen = pygame.display.set_mode([space_size, space_size])
 
 clock =pygame.time.Clock()
 
-particle1x.append(x1)
-particle2x.append(x2)
+velocity1.append(x1)
+velocity2.append(vx2)
 steps_list.append(times_run)
 
 running = True
@@ -110,18 +112,18 @@ while running:
     if times_run > steps:
         vx1,vx2 = 0,0
 
-    if times_run == 1*n:
+    if times_run == 25*n:
         n+=1
-        particle1x.append(x1)
-        particle2x.append(x2)
+        velocity1.append(vx1)
+        velocity2.append(vx2)
+    
         steps_list.append(times_run)
 
 
-plt.plot(steps_list, particle1x, label='Trajectory 1', color='blue')
-plt.plot(steps_list, particle2x, label='Trajectory 2', color='red')
+plt.plot(steps_list, velocity1, label='Ball 1', color='blue')
+plt.plot(steps_list, velocity2, label='Ball 2', color='red')
 plt.xlabel("Step number")
-plt.ylabel("X Position (m)")
+plt.ylabel("Vx")
 plt.grid(True)
 plt.legend()
 plt.show()
-

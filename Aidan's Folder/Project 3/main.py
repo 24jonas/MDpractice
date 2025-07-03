@@ -1,9 +1,8 @@
-import numpy as np
-import matplotlib.pyplot as plt
-
 from VV_func import verlet
 from energy import kinetic, potential
 from init import *
+from plots import *
+from gr_calc import update_gr, normalize_gr
 
 R = R_arr.copy()
 V = V_arr.copy()
@@ -13,50 +12,31 @@ E_sto = [kinetic(V) + potential(R)]
 
 
 for i in range(num_step):
-    V, R = verlet(V, R, dt)
-    R_sto.append(R.copy())
-    V_sto.append(V.copy())
+    if i % sample_rate == 0:
+        V, R = verlet(V, R, dt)
+        R_sto.append(R.copy())
+        V_sto.append(V.copy())
 
-    K = kinetic(V)
-    P = potential(R)
-    KE_sto.append(K)
-    PE_sto.append(P)
-    E_sto.append(K + P)
+        K = kinetic(V)
+        P = potential(R)
+        KE_sto.append(K)
+        PE_sto.append(P)
+        E_sto.append(K + P)
 
+    if i >= equil_step and (i - equil_step) % sample_rate_gr == 0:
+        update_gr(R, B, dr, nbin, np.array(border))
+        gr_sample_count += 1
+
+    if i % (num_step // 10) == 0:
+        print(f"Progress: {int(i / num_step * 100)}%...")
+
+# Preparing for plotting
 R_sto = np.array(R_sto)
 V_sto = np.array(V_sto)
-
-dims = R_sto.shape[2] ## 3D compatibility
-
-
-# Plot trajectories
-plt.subplot(1, 3, 1)
-for i in range(R_sto.shape[1]):
-    plt.plot(R_sto[:,i,0], label = f'Particle {i + 1}')
+## g(r) Normalization
+r_vals, g = normalize_gr(B, dr, nbin, gr_sample_count, R_arr, border, Dim_check)
 
 
-##plt.plot(R_sto[:, 0, 0], label='Particle 1')
-##plt.plot(R_sto[:, 1, 0], label='Particle 2')
+plot_master(R_sto, V_sto, KE_sto, PE_sto, E_sto, border, r_vals, g, dt, num_step, Dim_check, R_arr)
 
-plt.title("Particle trajectories")
-
-# Plot velocity
-plt.subplot(1, 3, 2)
-t = np.arange(len(V_sto)) * dt
-for i in range(V_sto.shape[1]):
-    for d in range(min(dims, 3)):
-        plt.plot(t, V_sto[:, i, d], label=f'P{i+1} V{d}')
-plt.title("Vel Graph")
-plt.legend()
-
-# Plot Energies
-plt.subplot(1,3,3)
-t = np.arange(len(KE_sto)) * dt
-plt.plot(t, KE_sto, label = 'Kinetic')
-plt.plot(t, PE_sto, label = 'Potential')
-plt.plot(t, E_sto, label = 'total')
-plt.title("Energies")
-plt.legend()
-
-plt.tight_layout()
-plt.show()
+print("Progress : 100.0%\nProgram ended successfully.")
