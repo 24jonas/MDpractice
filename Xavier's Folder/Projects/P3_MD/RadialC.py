@@ -47,13 +47,12 @@ for i in range(l):
             if r1[0] == r2[0] and r1[1] == r2[1] and r1[2] == r2[2]:
                 a = np.zeros((1,3))
                 lj = 0
-                r = 0
             else:
                 n, r = Vectors(r1, r2)
                 lj, a = Lennard_Jones(r, n, m)
-            
-            if i+1 > br:
-                rl.append(r)
+                if i+1 > br:
+                    rl.append(r)
+
             acc2.append(a)
             count += 1
         
@@ -66,18 +65,16 @@ for i in range(l):
     print(i+1)
 
 for r in rl:
-    nbin = int(r/bs) + 1
+    nbin = int(r/bs)
     bb[nbin] = bb[nbin] + 1
 
-rpd[0] = [0,0]
-arpd[0] = [0,0]
 for i in range(dd):
-    nbin = i + 1
+    nbin = i
     bb[nbin] = bb[nbin]/(l-br)/q
     gr = Radial_Density(bb, nbin, bs, q, blx)
-    rpd[nbin] = [gr,nbin]
+    rpd[nbin] = [gr,nbin*bs]
     if i < add:
-        arpd[nbin] = [gr,nbin]
+        arpd[nbin] = [gr,nbin*bs]
 
 print("------------------------------------------------------------------------------------------------------------------------------------------------------------")
 print("Complete")
