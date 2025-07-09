@@ -1,23 +1,29 @@
 import numpy as np
-
 ### Initial Variables and Constants Declaration ###
 
 ## Inputs ##
-get_input = True
-while(get_input):
+def get_input(mesg, default, cast_func):
+    inp = input(f"{mesg} (default: {default}): ")
+    if (inp.strip() == ''):
+        return default
+    else:
+        return cast_func(inp)
+while(True):
     Dim_check = input("Enter 2 for 2D, 3 for 3D, or 0 to exit.\n")
     if(Dim_check == "2"):
         print("Starting 2D Simulation.")
-        get_input = False
+        Dim_check = 2
+        break
     elif(Dim_check == "3"):
         print("Starting 3D Simulation.")
-        get_input = False
+        Dim_check = 3
+        break
     elif(Dim_check == "0"):
         print("Exiting Simulation.")
         exit()
 
 ## 2D init ##
-if (Dim_check == "2"):
+if (Dim_check == 2):
     R_arr = np.array([[3.0, 6.0],
                      [7.0, 6.0]])
 
@@ -27,8 +33,8 @@ if (Dim_check == "2"):
 
 ## 3D init ##
 def initialize_lattice(border):
-    layers = 4
-    spacing = border[0] / (layers + 1) ## Assuming cubic borders
+    layers = int(input("Input number of particles as cube root: "))
+    spacing = border[0] / (layers) ## Assuming cubic borders
     R = []
 
     for i in range(layers):
@@ -41,10 +47,9 @@ def initialize_lattice(border):
                 R.append(R_val)
                 
     R_arr = np.array(R)
-
     return R_arr
 
-if (Dim_check == "3"):
+if (Dim_check == 3):
     SX = 6.0
     SY = 6.0
     SZ = 6.0
@@ -59,13 +64,14 @@ dr = 0.05
 nbin = 100
 B = np.zeros(nbin)
 equil_step = 5000
-sample_rate = 20
+sample_rate_gr = 20
 gr_sample_count = 0
 
 ## Global init ##
-dt = float(input("Input dt:\n"))
-num_step = int(input("Input num_step:\n"))
+dt = get_input("Input dt", 0.01, float)
+num_step = get_input("Input num_step", 10000, int)
 R_sto = [R_arr.copy()]
 V_sto = [V_arr.copy()]
+sample_rate = get_input("Sample Rate", 10, int)
 
 

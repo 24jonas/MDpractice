@@ -7,7 +7,7 @@ import numpy as np
 number_of_objects = 27      # Must have an integer cube root.
 time_increment = 0.01
 number_of_increments = 10000
-initial_offset = 0.5
+initial_offset = 0
 initial_velocity = 1        # In each dimension.
 object_mass = 0.1
 object_radius = 0.5
@@ -19,10 +19,10 @@ box_y_length = box_length
 box_z_length = box_length
 speed_limit = 100
 energy_limit = 100
-bin_size = 0.5
+bin_size = 0.01
 begin_radii = 1000
-density_domain = 100
-abbreviated_density_domain = 20
+density_domain = int(100/(bin_size))
+abbreviated_density_domain = int(density_domain/5)
 rx = "X Position Array"
 ry = "Y Position Array"
 rz = "Z Position Array"
@@ -72,10 +72,10 @@ ke = np.zeros((l,1))
 ate = np.zeros((l,1))
 ape = np.zeros((l,1))
 ake = np.zeros((l,1))
-bb = np.zeros(dd+1)
+bb = np.zeros(dd)
 rl = []
-rpd = np.zeros((dd+1,2))
-arpd = np.zeros((add+1,2))
+rpd = np.zeros((dd,2))
+arpd = np.zeros((add,2))
 
 # Functions
 def Wall_x(rx, vx, ro, i):
@@ -152,6 +152,12 @@ def Kinetic_Energy(vx, vy, vz, m, i, w3):
     return k
 
 def Radial_Density(bb, nbin, bs, q, blx):
+    d = q/(blx**3)
+    v = 4*np.pi*((nbin*bs + bs)**3 - (nbin*bs)**3)/3
+    gr = bb[nbin]/(v*d)
+
+    """
     ppr = bb[nbin]/(q*4*(np.pi)*bs*(nbin*bs)**2)
     gr = (blx**3)*ppr/q
+    """
     return gr
