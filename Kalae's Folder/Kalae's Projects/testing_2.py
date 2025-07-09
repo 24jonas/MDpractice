@@ -1,31 +1,33 @@
-
 import math
 import matplotlib.pyplot as plt
 import numpy as np 
 
 # Simulation Settings 
 box_size = 6.0
-dt = 0.005
-steps = 10000
+dt = 0.01
+# steps = 10000 #########################
 sample_per = 10  # (this will be used for plotting intervals)
 
 
 # constants
-steps = 100
-dr =0.05
+steps = 5000 #100
+dr = 0.01 #0.05
 Num_particles=27
 Volume = box_size**3
-origin_particle =0
-counter = 0
-nbin = 100
+#origin_particle =0 ####################
+#counter = 0 ##########################
+max_distance = 2*box_size*np.sqrt(2)
+nbin = int(max_distance/dr) +1#100
+
+Dens = Num_particles/Volume #############################
 
 
 # arrays
 B_nbin =  np.zeros(nbin)
-r_xj = []
-r_values = []
-g_r = [] 
-nbins = [] 
+#r_xj = [] #######################
+#r_values = [] #########################
+g_r = np.zeros(nbin) ####################### 
+#nbins = [] ############################ 
 
 # Step 1: Initialize particles in a staggered checkerboard 
 particle_points = []
@@ -97,7 +99,7 @@ for step in range(steps):
         y_new = particle_points[i][1] + vy[i] * dt
         z_new = particle_points[i][2] + vz[i] * dt
 
-           # Periodic Conditions.
+        # Periodic Conditions.
         if x_new <= 0:
             x_new = box_size
             
@@ -115,11 +117,15 @@ for step in range(steps):
             
         elif z_new >= box_size:
             z_new = 0
+            
 
-        """
-        # Wall bounce conditions
-        if x_new <= 0 or x_new >= box_size:
-            vx[i] *= -1
+
+
+
+
+
+
+            """
             x_new = max(0, min(x_new, box_size))
 
         if y_new <= 0 or y_new >= box_size:
@@ -129,9 +135,7 @@ for step in range(steps):
         if z_new <= 0 or z_new >= box_size:
             vz[i] *= -1
             z_new = max(0, min(z_new, box_size))
-
-        """
-
+"""
         new_positions.append((x_new, y_new, z_new))  # Correct list
 
     particle_points = new_positions  # Update all positions at once
@@ -142,43 +146,56 @@ for step in range(steps):
         potential_energy_list.append(potential_energy)
 
 
-        #for i in range(steps):
-for step in range(100):
+    #for i in range(steps):
+    for particle in range(N): #################### the g(r) can be measured a snapshot at a time then be normalized at the end. Each snapshot only looks at each pair once or twice.
+            
+        # point  = step % 27 ######################
 
+        # if point == 0: ###########################
+        #     origin_particle +=1 ################
+
+        # if origin_particle != point: ############
+
+        for particle2 in range(N): ###############################################
+            
+            #print("j:", point, "origin_particle", origin_particle)
+            rx = particle_points[particle][0] - particle_points[particle2][0]
+            ry = particle_points[particle][1] - particle_points[particle2][1]
+            rz = particle_points[particle][2] - particle_points[particle2][2]
         
-        point  = step % 27
+            current_r = (rx**2 + ry**2 + rz**2)**(0.5)  ################ Dont need to save with this approach of computing within the loop
 
-        if point == 0:
-            origin_particle +=1
 
-        if origin_particle != point:
-             
-            print("j:", point, "origin_particle", origin_particle)
-            rx = particle_points[origin_particle][0] - particle_points[point][0]
-            ry = particle_points[origin_particle][1] - particle_points[point][1]
-            rz = particle_points[origin_particle][2] - particle_points[point][2]
+            #nbin = int(r_xj[counter]/dr)+1 #########
+            #nbin = counter + 1 #############
+            which_bin = int(current_r/dr)
+            B_nbin[which_bin] = B_nbin[which_bin]+1 # sums 1 because of our loop setup that repeats each pair
         
-            r_xj.append((rx**2 + ry**2+rz**2)**(0.5))
+            #r_values.append(nbin*dr) ####################### not needed until the end
+            # r_outer = (which_bin+1)*dr #(counter+1)*dr #####
+            # r_inner = which_bin*dr #counter*dr #############
+ 
+            # shell_vol = 4*np.pi*(r_outer**3-r_inner**3)/3 #####
 
 
-            #nbin = int(r_xj[counter]/dr)+1
-            nbin = counter + 1
-            B_nbin[nbin] = B_nbin[nbin]+1
-            r_values.append(nbin*dr)
-
-            r_outer = (counter+1)*dr
-            r_inner = counter*dr
-
-            shell_vol = 4*np.pi*(r_outer**3-r_inner**3)/3
+            #p_r = (B_nbin[counter])/(Num_particles * 4*np.pi*((r_values[counter]*dr)**2) * dr)  ###
+            ####
+            #g_r.append(((shell_vol)/Num_particles)*p_r) ####
+            #counter += 1 #####
 
 
-            #p_r = (B_nbin[counter])/(Num_particles * 4*np.pi*((r_values[counter]*dr)**2) * dr)
-            nbin
-            p_r = (B_nbin[counter])/(Num_particles * 4*np.pi*((nbin*dr)**3) * dr)
-            g_r.append(((shell_vol)/Num_particles)*p_r)
-            counter += 1
+print(B_nbin)
+
+#Normalize at end
+for i in range(nbin):
+    r_outer = (i+1)*dr #(counter+1)*dr
+    r_inner = i*dr #counter*dr
+    shell_vol =  4*np.pi*(r_outer**3-r_inner**3)/3
+    g_r[i] = (B_nbin[i])/(Num_particles * steps * Dens * shell_vol)
 
 
+
+r_values = np.linspace(0,max_distance,nbin)
 
 
 plt.figure(figsize=(6, 5))
@@ -189,4 +206,3 @@ plt.title("Pair Correlation Function g(r)")
 plt.grid(True)
 plt.tight_layout()
 plt.show()
-
