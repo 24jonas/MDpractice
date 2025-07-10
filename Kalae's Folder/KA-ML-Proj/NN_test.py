@@ -3,11 +3,15 @@ from pyexpat import model
 from tkinter import _test 
 import numpy as np
 import pandas as pd
+import matplotlib as pl
+
 
 url = "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/mpg.csv"
 DB = pd.read_csv(url)
 test_size = 3000
 lr =0.001
+x_test = []
+y_test = []
 
 #Learning Function
 
@@ -22,7 +26,7 @@ def dx_activation_fun(x):
 
 #Finding out how wrong the neural network 
 def loss_fun(y_pred,y_true):
-    return np.mean ((y_pred-y_true)**2)
+    return np.mean((y_pred-y_true)**2)
 
 def dx_loss_fun(y_pred,y_true):
     return 2* (y_pred-y_true)
