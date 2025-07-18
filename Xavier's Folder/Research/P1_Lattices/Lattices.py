@@ -9,7 +9,6 @@ Original file is located at
     https://colab.research.google.com/drive/1nssoWbPG3tS9SOstjKABSaXjCytpn8Bg
 """
 
-
 # @title 1. Installs for collab
 # !apt install python3-mpi4py cython3 libxc-dev gpaw-data
 # !pip -q install gpaw
@@ -52,11 +51,12 @@ supercell[0] = (a/2)*np.array([1,1,0])
 supercell[1] = (a/2)*np.array([1,0,1])
 supercell[2] = (a/2)*np.array([0,1,1])
 
-positions = np.zeros((1,3)) # Num Particle, Dim
+positions = np.zeros((2,3)) # Num Particle, Dim
 
 positions[0] = 0*supercell[0] + 0*supercell[1] + 0*supercell[2] # Set positions of particles in the cell (basis)
+positions[1] = 0.25*supercell[0] + 0.25*supercell[1] + 0.25*supercell[2]
 
-silver = ase.Atoms('Ag', positions, cell=supercell, pbc=True)
+silver = ase.Atoms('C2', positions, cell=supercell, pbc=True)    # I'm keeping the variable name as silver so that I don't have to change it in other places.
 
 # Visualize
 ase.visualize.view(silver)
@@ -65,15 +65,15 @@ view(silver, viewer='x3d')
 # Manual parallel and more approximated band structure (good for bigger cells), manual cell and kpoints
 band_parallelization = 1
 nKpoints = 16
-nBands = 10
-basisN = 12 # 4 for carbon or Si sz(dzp), 9 for carbon or Si szp(dzp), 12 for Ag sz(dzp)
+nBands = 8
+basisN = 4 # 4 for carbon or Si sz(dzp), 9 for carbon or Si szp(dzp), 12 for Ag sz(dzp)
 datapath = "/Users/xavierduane-tessier/Downloads/Untitled/MDpractice/Xavier's Folder/Research/P1_Lattices/data/"
 Natoms = len(positions[:,0])
 
 calc = GPAW(mode='lcao',
             basis='sz(dzp)',
             xc='PBE',
-            kpts=(2, 2, 1),
+            kpts=(2, 2, 2),
             occupations=FermiDirac(0.01),
             txt=datapath+'graphene_bilayer_sc_.txt',
             parallel=dict(band=band_parallelization,              # band parallelization
