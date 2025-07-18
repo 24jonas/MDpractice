@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 n=1
 steps_list=[]
 #Particle 1
-particle1x= []
+energy1= []
 x1=700
 y1=600
 vx1= 0
@@ -26,13 +26,15 @@ radius1=20
 color_1=(255, 255, 255)
 
 #Particle 2
-particle2x= []
+energy2= []
 x2=300
 y2=600
-vx2= 4000
+vx2= 40
 radius2=20
 color_2=(0, 0, 255)
 
+#total energy
+energy_total= []
 
 
 rate =100
@@ -57,8 +59,9 @@ screen = pygame.display.set_mode([space_size, space_size])
 
 clock =pygame.time.Clock()
 
-particle1x.append(x1)
-particle2x.append(x2)
+energy1.append((1/2)*vx1**2)
+energy2.append((1/2)*vx2**2)
+energy_total.append(0.5*((vx1**2)+vx2**2))
 steps_list.append(times_run)
 
 running = True
@@ -110,18 +113,19 @@ while running:
     if times_run > steps:
         vx1,vx2 = 0,0
 
-    if times_run == 1*n:
+    if times_run == 50*n:
         n+=1
-        particle1x.append(x1)
-        particle2x.append(x2)
+        energy1.append((1/2)*vx1**2)
+        energy2.append((1/2)*vx2**2)
+        energy_total.append(0.5*((vx1**2)+vx2**2))
         steps_list.append(times_run)
 
 
-plt.plot(steps_list, particle1x, label='Trajectory 1', color='blue')
-plt.plot(steps_list, particle2x, label='Trajectory 2', color='red')
+plt.plot(steps_list, energy1, label='Kinetic Energy 1', color='blue')
+plt.plot(steps_list, energy2, label='Kinetic Energy 2', color='red')
+plt.plot(steps_list, energy_total, label= 'total energy ', color='green')
 plt.xlabel("Step number")
-plt.ylabel("X Position (m)")
+plt.ylabel("Kinetic Energy")
 plt.grid(True)
 plt.legend()
 plt.show()
-

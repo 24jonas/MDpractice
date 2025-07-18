@@ -3,11 +3,13 @@ import matplotlib.pyplot as plt
 
 # -1/2 * [(r-r_1)/(d_1)**3]-1/2 * 
 # [(r-r_2)/(d_2)**3] = 0
+#time
+t = 0
 
-r_1 = [-0.5*np.cos(0),-0.5*np.sin(0)]
+r_1 = [-0.5*np.cos(t),-0.5*np.sin(t)]
 r_1_absolutevalue = 0.5
 r_x= []
-r_2 = [0.5*np.cos(0),0.5*np.sin(0)]
+r_2 = [0.5*np.cos(t),0.5*np.sin(t)]
 r_2_absolutevalue = 0.5
 m_1 = 1/2
 m_2 = 1/2
@@ -37,6 +39,7 @@ for i in range(steps):
         y.append(y[i] + v_y[i+1] * dt)
         r_1 = [-0.5*np.cos(t),-0.5*np.sin(t)]
         r_2 = [0.5*np.cos(t),0.5*np.sin(t)]
+        t+= 1
 
 
 
