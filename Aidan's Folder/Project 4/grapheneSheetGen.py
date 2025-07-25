@@ -4,11 +4,11 @@ def generate_graphene_sheet(a = 2.46, nx = 4, ny = 4):
     
     # Lattice Vectors
     a1 = np.array([a, 0.0], dtype = float)
-    a2 = np.array([0.5 * a, np.sqrt(3) / 2 * a], dtype = float)    # a2 rotated 60 degrees from a1
+    a2 = np.array([0.5 * a, (np.sqrt(3) / 2) * a], dtype = float)    # a2 rotated 60 degrees from a1
 
     # Basis definition- Atom A is origin, so B is at offset
     ##
-    B_offset = (1/3) * a1 + (2/3) * a2 
+    B_offset = (1/3) * a1 + (np.sqrt(3) / 6) * a2 
 
     # Making positions array by generating in order of A, B, A, B, ... etc.
     positions = []
