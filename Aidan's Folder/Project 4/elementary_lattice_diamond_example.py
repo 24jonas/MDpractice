@@ -60,12 +60,12 @@ view(diamond, viewer='x3d')
 band_parallelization = 1
 nKpoints = 16
 nBands = 8
-basisN = 9 # 4 for carbon or Si sz(dzp), 9 for carbon or Si szp(dzp), 12 for Ag sz(dzp)
+basisN = 4 # 4 for carbon or Si sz(dzp), 9 for carbon or Si szp(dzp), 12 for Ag sz(dzp)
 datapath = "data/"
 Natoms = len(positions[:,0])
 
 calc = GPAW(mode='lcao',
-            basis='szp(dzp)',
+            basis='sz(dzp)',
             xc='PBE',
             kpts=(2, 2, 2),
             occupations=FermiDirac(0.01),
