@@ -25,16 +25,13 @@ On top of that I will use reLU to add a component of nonlinearity.
 
 """
 #Hyperparameter:
-alpha = 2
+alpha = 0.01
 #learning rate
 lr = 0.0001
 #times we took our whole data set and pass it back in.
 epoch = 10
 batch_size = 8
 #Callable functions.
-import numpy as np
-from sklearn.preprocessing import StandardScaler
-
 """
 PREDICTORS = ["mpg"]
 TARGET = "displacement"
@@ -216,8 +213,6 @@ plt.xlabel('cylinders')
 plt.ylabel('acceleration')
 plt.title('cylinders vs acceleration')
 plt.show()
-
 corr1 = Data['cylinders'].corr(Data['acceleration'])
 print("Correlation coefficient (weight vs acceleration):", corr1)
-
 """

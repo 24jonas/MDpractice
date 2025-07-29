@@ -3,133 +3,81 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt 
 
+""" I am cody the code the Jonas linked so that i can undeerstand it better. This is NOT my code."""
 
-url = "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/mpg.csv"
-DB = pd.read_csv(url)
 
-import numpy as np
-import pandas as pd
-from matplotlib import pyplot as plt
-from sklearn.preprocessing import StandardScaler
+class RotNetDataGenerator(Iterator):
 
-# Load dataset
-url = "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/mpg.csv"
-Data = pd.read_csv(url)
+    def __init__(self, input, batch_size=64,
+                 preprocess_func=None, shuffle=False):
+        self.images = input
+        self.batch_size = batch_size
+        self.input_shape = self.images.shape[1:]
+        self.preprocess_func = preprocess_func
+        self.shuffle = shuffle
+        # add dimension if the images are greyscale
+        if len(self.input_shape) == 2:
+            self.input_shape = self.input_shape + (1,)
+        N = self.images.shape[0]
+        super(RotNetDataGenerator, self).__init__(N, batch_size, shuffle, None)
 
-# Drop missing values to avoid errors
-PREDICTORS = ["mpg"]
-TARGET = "displacement"
-Data = Data.dropna(subset=PREDICTORS + [TARGET])
+    def next(self):
+        with self.lock:
+            # get input data index and size of the current batch
+            index_array, _, current_batch_size = next(self.index_generator)
 
-# Scale the input feature (but not the target)
-scaler = StandardScaler()
-Data[PREDICTORS] = scaler.fit_transform(Data[PREDICTORS])
+        # create array to hold the images
+        batch_x = np.zeros((current_batch_size,) + self.input_shape, dtype='float32')
+        # create array to hold the labels
+        batch_y = np.zeros(current_batch_size, dtype='float32')
 
-# Split the dataset: 70% train, 15% validation, 15% test
-n = len(Data)
-train_end = int(0.7 * n)
-val_end = int(0.85 * n)
+        # iterate through the current batch
+        for i, j in enumerate(index_array):
+            image = self.images[j]
 
-train = Data.iloc[:train_end]
-valid = Data.iloc[train_end:val_end]
-test = Data.iloc[val_end:]
+            # get a random angle
+            rotation_angle = np.random.randint(360)
 
-# Convert each split into NumPy arrays (X, y)
-train_x, train_y = train[PREDICTORS].to_numpy(), train[[TARGET]].to_numpy()
-valid_x, valid_y = valid[PREDICTORS].to_numpy(), valid[[TARGET]].to_numpy()
-test_x, test_y = test[PREDICTORS].to_numpy(), test[[TARGET]].to_numpy()
+            # rotate the image
+            rotated_image = rotate(image, rotation_angle)
 
-# Utility functions
-def mse(actual, predicted):
-    return np.mean((actual - predicted) ** 2)
+            # add dimension to account for the channels if the image is greyscale
+            if rotated_image.ndim == 2:
+                rotated_image = np.expand_dims(rotated_image, axis=2)
 
-def mse_gradient(actual, predicted):
-    return 2 * (predicted - actual)
+            # store the image and label in their corresponding batches
+            batch_x[i] = rotated_image
+            batch_y[i] = rotation_angle
 
-# Neural network layer initialization
-def initialized_layers(layer_sizes):
-    layers = []
-    for i in range(1, len(layer_sizes)):
-        weight = np.random.rand(layer_sizes[i-1], layer_sizes[i]) / 5 - 0.1
-        bias = np.ones((1, layer_sizes[i]))
-        layers.append([weight, bias])
-    return layers
+        # convert the numerical labels to binary labels
+        batch_y = to_categorical(batch_y, 360)
 
-# Forward pass
-def forward_pass(batch, layers):
-    hiddens = [batch.copy()]
-    for i in range(len(layers)):
-        weight, bias = layers[i]
-        batch = np.matmul(batch, weight) + bias
-        if i < len(layers) - 1:
-            batch = np.maximum(batch, 0)  # ReLU
-        hiddens.append(batch.copy())
-    return batch, hiddens
+        if self.preprocess_func:
+            batch_x = self.preprocess_func(batch_x)
 
-# Backward pass
-def backward_pass(layers, hiddens, grad, lr):
-    for i in range(len(layers) - 1, -1, -1):
-        if i != len(layers) - 1:
-            grad = grad * np.heaviside(hiddens[i + 1], 0)  # ReLU derivative
+        return batch_x, batch_y
+# number of convolutional filters to use
+nb_filters = 64
+# size of pooling area for max pooling
+pool_size = (2, 2)
+# convolution kernel size
+kernel_size = (3, 3)
 
-        w_grad = hiddens[i].T @ grad
-        b_grad = np.mean(grad, axis=0, keepdims=True)
+nb_train_samples, img_rows, img_cols, img_channels = X_train.shape
+input_shape = (img_rows, img_cols, img_channels)
+nb_test_samples = X_test.shape[0]
 
-        layers[i][0] -= w_grad * lr
-        layers[i][1] -= b_grad * lr
+# model definition
+input = Input(shape=(img_rows, img_cols, img_channels))
+x = Convolution2D(nb_filters, kernel_size[0], kernel_size[1],
+                  activation='relu')(input)
+x = Convolution2D(nb_filters, kernel_size[0], kernel_size[1],
+                  activation='relu')(x)
+x = MaxPooling2D(pool_size=(2, 2))(x)
+x = Dropout(0.25)(x)
+x = Flatten()(x)
+x = Dense(128, activation='relu')(x)
+x = Dropout(0.25)(x)
+x = Dense(nb_classes, activation='softmax')(x)
 
-        grad = grad @ layers[i][0].T
-
-# Plotting initial correlation
-plt.scatter(Data['mpg'], Data['displacement'])
-plt.xlabel('mpg')
-plt.ylabel('displacement')
-plt.title('mpg vs displacement')
-corr = Data['mpg'].corr(Data['displacement'])
-print("Correlation coefficient (mpg vs displacement):", corr)
-
-# Plot simple linear guess
-prediction = lambda x, w1 = -12.2, b = 510: w1 * x + b
-plt.plot([Data['mpg'].min(), Data['mpg'].max()],
-         [prediction(Data['mpg'].min()), prediction(Data['mpg'].max())],
-         'green')
-plt.show()
-
-# Optional: look at binned behavior
-mpg_bins = pd.cut(Data["mpg"], 25)
-ratios = Data["displacement"] - 510 / Data['mpg']
-binned_ratio = ratios.groupby(mpg_bins).mean()
-binned_mpg = Data["mpg"].groupby(mpg_bins).mean()
-
-plt.scatter(binned_mpg, binned_ratio)
-plt.xlabel('mpg_bins')
-plt.ylabel('binned_ratio')
-plt.title('mpg vs ratio')
-plt.show()
-
-# Training Hyperparameters
-epochs = 10
-batch_size = 8
-lr = 0.0001
-
-# Define and initialize layers: [input, hidden1, hidden2, output]
-layer_config = [1, 10, 10, 1]
-layers = initialized_layers(layer_config)
-
-# Training loop
-for epoch in range(epochs):
-    epoch_loss = 0
-
-    for i in range(0, train_x.shape[0], batch_size):
-        x_batch = train_x[i:i + batch_size]
-        y_batch = train_y[i:i + batch_size]
-
-        pred, hidden = forward_pass(x_batch, layers)
-
-        loss_grad = mse_gradient(y_batch, pred)
-        epoch_loss += mse(y_batch, pred)
-
-        backward_pass(layers, hidden, loss_grad, lr)
-
-    avg_loss = epoch_loss / (train_x.shape[0] // batch_size)
-    print(f"Epoch {epoch + 1} Train MSE: {avg_loss:.4f}")
+model = Model(input=input, output=x)
