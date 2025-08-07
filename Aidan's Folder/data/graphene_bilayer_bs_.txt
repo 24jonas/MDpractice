@@ -6,9 +6,9 @@
  |___|_|             
 
 User:   ajam@DESKTOP-5QB3SQI
-Date:   Fri Jul 18 10:18:37 2025
+Date:   Fri Jul 18 10:33:40 2025
 Arch:   x86_64
-Pid:    10396
+Pid:    2783
 CWD:    /mnt/c/Users/Aidan/Documents/GitHub/MDpractice/Aidan's Folder
 Python: 3.11.13
 gpaw:   /home/ajam/miniconda3/envs/gpaw/lib/python3.11/site-packages/gpaw
@@ -26,7 +26,7 @@ OMP_NUM_THREADS: 1
 Reading from data/diamond.gpw
 Read dipole, energy, free_energy, magmom, magmoms
 Reading input parameters:
-  basis: szp(dzp)
+  basis: sz(dzp)
   kpts: [2 2 2]
   mode: lcao
   occupations: {name: fermi-dirac,
@@ -43,7 +43,7 @@ species:
     valence: 4
     core: 2
     charge: 0.0
-    file: /usr/share/gpaw-setups/C.PBE.gz
+    file: /home/ajam/miniconda3/envs/gpaw/share/gpaw/C.PBE.gz
     compensation charges: {type: gauss,
                            rc: 0.20,
                            lmax: 2}
@@ -58,13 +58,12 @@ species:
       -  d           0.000   0.635
   
     # LCAO basis set for C:
-    #   Name: szp(dzp)
-    #   File: /usr/share/gpaw-setups/C.dzp.basis.gz
-    #   Number of radial functions: 3
-    #   Number of spherical harmonics: 9
+    #   Name: sz(dzp)
+    #   File: /home/ajam/miniconda3/envs/gpaw/share/gpaw/C.dzp.basis.gz
+    #   Number of radial functions: 2
+    #   Number of spherical harmonics: 4
     #     l=0, rc=5.5469 Bohr: 2s-sz confined orbital
     #     l=1, rc=6.6719 Bohr: 2p-sz confined orbital
-    #     l=2, rc=6.6719 Bohr: d-type Gaussian polarization
     #   Number of RI-basis functions 0
 
 Reference energy: -2055.256231  # eV
@@ -142,8 +141,8 @@ Hamiltonian:
 XC parameters: PBE with 2 nearest neighbor stencil
 
 Memory estimate:
-  Process memory now: 190.82 MiB
-  Calculator: 5.96 MiB
+  Process memory now: 185.92 MiB
+  Calculator: 3.80 MiB
     Density: 1.92 MiB
       Arrays: 0.34 MiB
       Localized functions: 1.45 MiB
@@ -153,17 +152,17 @@ Memory estimate:
       XC: 0.00 MiB
       Poisson: 0.00 MiB
       vbar: 0.12 MiB
-    Wavefunctions: 3.70 MiB
+    Wavefunctions: 1.54 MiB
       C [qnM]: 0.00 MiB
-      S, T [2 x qmm]: 0.02 MiB
+      S, T [2 x qmm]: 0.00 MiB
       P [aqMi]: 0.00 MiB
-      BasisFunctions: 3.67 MiB
+      BasisFunctions: 1.53 MiB
       Eigensolver: 0.00 MiB
 
 Total number of cores used: 1
 
 Number of atoms: 2
-Number of atomic orbitals: 18
+Number of atomic orbitals: 8
 Number of bands in calculation: 8
 Number of valence electrons: 8
 Bands to converge: occupied
@@ -185,7 +184,7 @@ species:
     valence: 4
     core: 2
     charge: 0.0
-    file: /usr/share/gpaw-setups/C.PBE.gz
+    file: /home/ajam/miniconda3/envs/gpaw/share/gpaw/C.PBE.gz
     compensation charges: {type: gauss,
                            rc: 0.20,
                            lmax: 2}
@@ -200,13 +199,12 @@ species:
       -  d           0.000   0.635
   
     # LCAO basis set for C:
-    #   Name: szp(dzp)
-    #   File: /usr/share/gpaw-setups/C.dzp.basis.gz
-    #   Number of radial functions: 3
-    #   Number of spherical harmonics: 9
+    #   Name: sz(dzp)
+    #   File: /home/ajam/miniconda3/envs/gpaw/share/gpaw/C.dzp.basis.gz
+    #   Number of radial functions: 2
+    #   Number of spherical harmonics: 4
     #     l=0, rc=5.5469 Bohr: 2s-sz confined orbital
     #     l=1, rc=6.6719 Bohr: 2p-sz confined orbital
-    #     l=2, rc=6.6719 Bohr: d-type Gaussian polarization
     #   Number of RI-basis functions 0
 
 Reference energy: -2055.256231  # eV
@@ -250,8 +248,8 @@ No density mixing
 XC parameters: PBE with 2 nearest neighbor stencil
 
 Memory estimate:
-  Process memory now: 190.82 MiB
-  Calculator: 5.95 MiB
+  Process memory now: 185.92 MiB
+  Calculator: 3.80 MiB
     Density: 1.92 MiB
       Arrays: 0.34 MiB
       Localized functions: 1.45 MiB
@@ -261,17 +259,17 @@ Memory estimate:
       XC: 0.00 MiB
       Poisson: 0.00 MiB
       vbar: 0.12 MiB
-    Wavefunctions: 3.69 MiB
+    Wavefunctions: 1.53 MiB
       C [qnM]: 0.00 MiB
-      S, T [2 x qmm]: 0.01 MiB
+      S, T [2 x qmm]: 0.00 MiB
       P [aqMi]: 0.00 MiB
-      BasisFunctions: 3.67 MiB
+      BasisFunctions: 1.53 MiB
       Eigensolver: 0.00 MiB
 
 Total number of cores used: 1
 
 Number of atoms: 2
-Number of atomic orbitals: 18
+Number of atomic orbitals: 8
 Number of bands in calculation: 8
 Number of valence electrons: 8
 Bands to converge: occupied
@@ -299,84 +297,84 @@ Effective grid spacing dv^(1/3) = 0.1873
 
      iter     time        total  log10-change:
                          energy   eigst   dens
-iter:   1 10:18:38   -23.672551        c      c
-iter:   2 10:18:38   -23.672551        c      c
-iter:   3 10:18:38   -23.672551c       c      c
+iter:   1 10:33:40   -23.242044        c      c
+iter:   2 10:33:40   -23.242044        c      c
+iter:   3 10:33:40   -23.242044c       c      c
 
 Converged after 3 iterations.
 
-Dipole moment: (-2.970761, -2.970761, -2.970761) |e|*Ang
+Dipole moment: (-3.037577, -3.037577, -3.037577) |e|*Ang
 
 Energy contributions relative to reference atoms: (reference = -2055.256231)
 
-Kinetic:         -6.715426
-Potential:       -0.264378
+Kinetic:         -3.608962
+Potential:       -3.046193
 External:        +0.000000
-XC:             -16.976838
+XC:             -16.881455
 Entropy (-ST):   -0.000000
-Local:           +0.284091
+Local:           +0.294567
 SIC:             +0.000000
 --------------------------
-Free energy:    -23.672551
-Extrapolated:   -23.672551
+Free energy:    -23.242044
+Extrapolated:   -23.242044
 
  Band  Eigenvalues  Occupancy
-    0     -1.34727    2.00000
-    1     -0.03955    2.00000
-    2      2.63424    2.00000
-    3      6.21784    2.00000
-    4     17.88663    0.00000
-    5     23.35046    0.00000
-    6     25.81336    0.00000
-    7     27.50741    0.00000
+    0     -1.35895    2.00000
+    1     -0.02498    2.00000
+    2      2.62007    2.00000
+    3      6.18188    2.00000
+    4     20.60024    0.00000
+    5     25.10313    0.00000
+    6     26.61885    0.00000
+    7     28.20169    0.00000
 
-Fermi level: 12.05224
+Fermi level: 13.39106
 
-Gap: 11.669 eV
+Gap: 14.418 eV
 Transition (v -> c):
   (s=0, k=0, n=3, [0.38, 0.38, 0.75]) -> (s=0, k=0, n=4, [0.38, 0.38, 0.75])
 No difference between direct/indirect transitions
    Timing:                              incl.     excl.
 -----------------------------------------------------------
 Basic WFS set positions:             0.000     0.000   0.0% |
-Basis functions set positions:       0.009     0.009   1.1% |
+Basis functions set positions:       0.008     0.008   2.0% ||
 DenseAtomicCorrection:               0.000     0.000   0.0% |
 Distribute overlap matrix:           0.000     0.000   0.0% |
-LCAO WFS Initialize:                 0.033     0.000   0.0% |
- Hamiltonian:                        0.032     0.000   0.0% |
-  Atomic:                            0.021     0.000   0.0% |
-   XC Correction:                    0.021     0.021   2.6% ||
-  Calculate atomic Hamiltonians:     0.000     0.000   0.0% |
+LCAO WFS Initialize:                 0.035     0.000   0.1% |
+ Hamiltonian:                        0.035     0.000   0.0% |
+  Atomic:                            0.030     0.000   0.1% |
+   XC Correction:                    0.029     0.029   7.5% |--|
+  Calculate atomic Hamiltonians:     0.000     0.000   0.1% |
   Communicate:                       0.000     0.000   0.0% |
   Hartree integrate/restrict:        0.000     0.000   0.0% |
-  Poisson:                           0.001     0.000   0.0% |
-   Communicate from 1D:              0.000     0.000   0.0% |
-   Communicate from 2D:              0.000     0.000   0.0% |
-   Communicate to 1D:                0.000     0.000   0.0% |
-   Communicate to 2D:                0.000     0.000   0.0% |
+  Poisson:                           0.002     0.000   0.0% |
+   Communicate from 1D:              0.000     0.000   0.1% |
+   Communicate from 2D:              0.000     0.000   0.1% |
+   Communicate to 1D:                0.000     0.000   0.1% |
+   Communicate to 2D:                0.000     0.000   0.1% |
    FFT 1D:                           0.000     0.000   0.0% |
-   FFT 2D:                           0.000     0.000   0.0% |
-  XC 3D grid:                        0.009     0.009   1.2% |
+   FFT 2D:                           0.000     0.000   0.1% |
+  XC 3D grid:                        0.003     0.003   0.7% |
   vbar:                              0.000     0.000   0.0% |
-P tci:                               0.006     0.006   0.7% |
-Potential matrix:                    0.110     0.110  13.8% |-----|
+P tci:                               0.004     0.004   1.1% |
+Potential matrix:                    0.031     0.031   8.0% |--|
 Redistribute:                        0.000     0.000   0.0% |
-SCF-cycle:                           0.325     0.005   0.6% |
- LCAO eigensolver:                   0.320     0.000   0.0% |
+SCF-cycle:                           0.088     0.001   0.3% |
+ LCAO eigensolver:                   0.087     0.000   0.0% |
   Calculate projections:             0.000     0.000   0.0% |
-  DenseAtomicCorrection:             0.000     0.000   0.0% |
+  DenseAtomicCorrection:             0.000     0.000   0.1% |
   Distribute overlap matrix:         0.000     0.000   0.0% |
-  Orbital Layouts:                   0.001     0.001   0.1% |
-  Potential matrix:                  0.294     0.294  36.8% |--------------|
-  Sum over cells:                    0.026     0.026   3.2% ||
-ST tci:                              0.012     0.012   1.5% ||
-Set symmetry:                        0.008     0.008   1.0% |
-Sum over cells:                      0.013     0.013   1.7% ||
-TCI: Evaluate splines:               0.030     0.030   3.8% |-|
-mktci:                               0.004     0.004   0.5% |
-Other:                               0.248     0.248  31.1% |-----------|
+  Orbital Layouts:                   0.000     0.000   0.1% |
+  Potential matrix:                  0.086     0.086  22.0% |--------|
+  Sum over cells:                    0.001     0.001   0.1% |
+ST tci:                              0.012     0.012   3.2% ||
+Set symmetry:                        0.002     0.002   0.6% |
+Sum over cells:                      0.000     0.000   0.1% |
+TCI: Evaluate splines:               0.008     0.008   2.0% ||
+mktci:                               0.007     0.007   1.8% ||
+Other:                               0.192     0.192  49.4% |-------------------|
 -----------------------------------------------------------
-Total:                                         0.797 100.0%
+Total:                                         0.388 100.0%
 
-Memory usage: 190.82 MiB
-Date: Fri Jul 18 10:18:38 2025
+Memory usage: 185.92 MiB
+Date: Fri Jul 18 10:33:40 2025
