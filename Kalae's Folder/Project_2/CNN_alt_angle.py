@@ -7,7 +7,7 @@ import torchvision.transforms.functional as TF
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPool2D, Dropout, Flatten, Dense
 from keras.optimizers import Adam
-from keras.utils import to_categorical      
+from keras.utils import to_categorical
 
 # Constants
 img_size = 128
@@ -95,7 +95,7 @@ def build_dataset(dataset, num_samples=1000):
         angle = np.random.randint(1, 360)
         rotated = TF.rotate(image, angle)
         X.append(rotated.squeeze().numpy())  # shape: (128, 128)
-        label = angle #// angle_resolution    # <-- Fix here
+        label = angle #// angle_resolution    # 
         Y.append(label)
     X = np.array(X).reshape(-1, img_size, img_size, 1) / 255.0  # Normalize
     Y = np.array(Y)
