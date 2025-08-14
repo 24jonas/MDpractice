@@ -17,7 +17,6 @@ for y in range(r):
 # Plot the coordinates.
 x1, y1 = co1[:, 0], co1[:, 1]
 x2, y2 = co2[:, 0], co2[:, 1]
-plt.figure(figsize=(6, 6))
 plt.scatter(x1, y1, color='blue', label='A Atoms')
 plt.scatter(x2, y2, color='red', label='B Atoms')
 plt.title("Graphene Lattice")
