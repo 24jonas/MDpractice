@@ -6,9 +6,9 @@
  |___|_|             
 
 User:   xavierduane-tessier@Xaviers-MacBook-Air-2.local
-Date:   Fri Jul 18 10:31:54 2025
+Date:   Fri Jul 25 10:19:07 2025
 Arch:   arm64
-Pid:    70869
+Pid:    99225
 CWD:    /Users/xavierduane-tessier/Downloads/Untitled/MDpractice
 Python: 3.13.2
 gpaw:   /Users/xavierduane-tessier/anaconda3/envs/MD/lib/python3.13/site-packages/gpaw
@@ -141,7 +141,7 @@ Hamiltonian:
 XC parameters: PBE with 2 nearest neighbor stencil
 
 Memory estimate:
-  Process memory now: 202.89 MiB
+  Process memory now: 207.09 MiB
   Calculator: 3.79 MiB
     Density: 1.92 MiB
       Arrays: 0.34 MiB
@@ -248,7 +248,7 @@ No density mixing
 XC parameters: PBE with 2 nearest neighbor stencil
 
 Memory estimate:
-  Process memory now: 202.89 MiB
+  Process memory now: 207.09 MiB
   Calculator: 3.79 MiB
     Density: 1.92 MiB
       Arrays: 0.34 MiB
@@ -297,9 +297,9 @@ Effective grid spacing dv^(1/3) = 0.1874
 
      iter     time        total  log10-change:
                          energy   eigst   dens
-iter:   1 10:31:54   -23.229031        c      c
-iter:   2 10:31:54   -23.229031        c      c
-iter:   3 10:31:54   -23.229031c       c      c
+iter:   1 10:19:07   -23.229031        c      c
+iter:   2 10:19:07   -23.229031        c      c
+iter:   3 10:19:07   -23.229031c       c      c
 
 Converged after 3 iterations.
 
@@ -337,44 +337,44 @@ No difference between direct/indirect transitions
    Timing:                              incl.     excl.
 -----------------------------------------------------------
 Basic WFS set positions:             0.000     0.000   0.0% |
-Basis functions set positions:       0.006     0.006   1.1% |
+Basis functions set positions:       0.005     0.005   1.5% ||
 DenseAtomicCorrection:               0.000     0.000   0.0% |
 Distribute overlap matrix:           0.000     0.000   0.0% |
-LCAO WFS Initialize:                 0.065     0.000   0.1% |
- Hamiltonian:                        0.064     0.000   0.0% |
-  Atomic:                            0.035     0.000   0.1% |
-   XC Correction:                    0.034     0.034   7.1% |--|
+LCAO WFS Initialize:                 0.020     0.000   0.1% |
+ Hamiltonian:                        0.020     0.000   0.0% |
+  Atomic:                            0.016     0.001   0.2% |
+   XC Correction:                    0.015     0.015   4.4% |-|
   Calculate atomic Hamiltonians:     0.000     0.000   0.1% |
   Communicate:                       0.000     0.000   0.0% |
   Hartree integrate/restrict:        0.000     0.000   0.0% |
   Poisson:                           0.001     0.000   0.0% |
    Communicate from 1D:              0.000     0.000   0.0% |
-   Communicate from 2D:              0.000     0.000   0.0% |
+   Communicate from 2D:              0.000     0.000   0.1% |
    Communicate to 1D:                0.000     0.000   0.0% |
    Communicate to 2D:                0.000     0.000   0.0% |
    FFT 1D:                           0.000     0.000   0.0% |
    FFT 2D:                           0.000     0.000   0.1% |
-  XC 3D grid:                        0.028     0.028   5.8% |-|
+  XC 3D grid:                        0.002     0.002   0.5% |
   vbar:                              0.000     0.000   0.0% |
-P tci:                               0.005     0.005   1.0% |
-Potential matrix:                    0.047     0.047   9.7% |---|
+P tci:                               0.004     0.004   1.3% ||
+Potential matrix:                    0.036     0.036  10.3% |---|
 Redistribute:                        0.000     0.000   0.0% |
-SCF-cycle:                           0.127     0.001   0.1% |
- LCAO eigensolver:                   0.126     0.000   0.0% |
+SCF-cycle:                           0.097     0.000   0.1% |
+ LCAO eigensolver:                   0.097     0.000   0.0% |
   Calculate projections:             0.000     0.000   0.0% |
   DenseAtomicCorrection:             0.000     0.000   0.0% |
   Distribute overlap matrix:         0.000     0.000   0.0% |
-  Orbital Layouts:                   0.000     0.000   0.1% |
-  Potential matrix:                  0.123     0.123  25.4% |---------|
-  Sum over cells:                    0.002     0.002   0.5% |
-ST tci:                              0.030     0.030   6.1% |-|
-Set symmetry:                        0.009     0.009   1.8% ||
+  Orbital Layouts:                   0.000     0.000   0.0% |
+  Potential matrix:                  0.096     0.096  27.6% |----------|
+  Sum over cells:                    0.000     0.000   0.1% |
+ST tci:                              0.016     0.016   4.5% |-|
+Set symmetry:                        0.003     0.003   0.8% |
 Sum over cells:                      0.000     0.000   0.0% |
-TCI: Evaluate splines:               0.019     0.019   3.9% |-|
-mktci:                               0.006     0.006   1.1% |
-Other:                               0.173     0.173  35.7% |-------------|
+TCI: Evaluate splines:               0.007     0.007   2.1% ||
+mktci:                               0.005     0.005   1.5% ||
+Other:                               0.155     0.155  44.2% |-----------------|
 -----------------------------------------------------------
-Total:                                         0.484 100.0%
+Total:                                         0.349 100.0%
 
-Memory usage: 202.89 MiB
-Date: Fri Jul 18 10:31:54 2025
+Memory usage: 207.09 MiB
+Date: Fri Jul 25 10:19:07 2025
