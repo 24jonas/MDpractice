@@ -1,0 +1,20 @@
+{
+  "layers": [
+    "graphene",
+    "graphene"
+  ],
+  "theta_deg": 21.75,
+  "solver": "direct",
+  "atom_count": 30,
+  "detK_per_layer": [
+    7,
+    8
+  ],
+  "thetas_deg_all": [
+    0.0,
+    21.75
+  ],
+  "d": 3.35,
+  "vacuum": 24.0,
+  "time": "2025-09-04 18:53:01"
+}
