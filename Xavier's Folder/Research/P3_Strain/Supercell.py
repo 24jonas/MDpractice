@@ -5,10 +5,20 @@ from Bilayer import *
 from Angle import m, n
 
 # Calculate supercell lattice vectors.
-if n % 3 == 0:
-    slv1, slv2 = SLVA(m, n, plv1, plv2, slv1, slv2)
-else:
-    slv1, slv2 = SLVB(m, n, plv1, plv2, slv1, slv2)
+# if n % 3 == 0:
+#     slv1, slv2 = SLVA(m, n, plv1, plv2, slv1, slv2)
+# else:
+#     slv1, slv2 = SLVB(m, n, plv1, plv2, slv1, slv2)
+
+############################################
+plv1 = plv1[0]
+plv2 = plv2[0]
+unit_cell = np.array([plv1[:2],plv2[:2]])
+slv1, slv2 = SLV(m, n, unit_cell)
+
+slv1 = np.append(slv1,0)
+slv2 = np.append(slv2,0)
+############################################
 
 # Isolate one supercell.
 co4, angle = Reorient(co4, slv1, slv2)
@@ -32,6 +42,8 @@ supercell = np.zeros((3,3))
 supercell[0] = co4[1] - co4[0]
 supercell[1] = co4[2] - co4[0]
 supercell[2] = 2*z
+
+print(np.linalg.norm(supercell[0]))
 
 # Plot the supercell.
 x1, y1, z1 = co1[:,0], co1[:,1], co1[:,2]

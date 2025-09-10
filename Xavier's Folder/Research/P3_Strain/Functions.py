@@ -5,7 +5,7 @@ import numpy as np
 
 # Variables
 Lattice_Constant = 2.46
-Repetitions = 15
+Repetitions = 100 ###########################
 Twist_Angle = 21.79
 Window_Size = 100
 Strain_x = 1.1
@@ -68,6 +68,21 @@ def SLVB(m, n, plv1, plv2, slv1, slv2):
     slv1 = m*plv1 + (m+n)*plv2
     slv2 = -(m+n)*plv1 + (2*m+n)*plv2
     return slv1, slv2
+
+###############################################
+def SLV(m, n, unit_cell):
+    lat_vec_mat_nontwisted = unit_cell.T
+    a1 = lat_vec_mat_nontwisted[:,0]
+    a2 = lat_vec_mat_nontwisted[:,1]
+
+    M = np.array([m,n])
+    N = np.array([n,m])
+
+    t1 = M[0] * a1 + N[0] * a2
+    t2 = -N[0] * a1 + (M[0] + N[0]) * a2
+
+    return t1, t2
+##############################################
 
 def Build(x, y, s, z, b, co1, co2, plv1, plv2, c):
     co1[2*c] = x*plv1 + y*plv2 - s
