@@ -1,0 +1,3 @@
+  hydrogen atom energy:     -1.08 eV
+  hydrogen molecule energy: -6.65 eV
+  atomization energy:        4.50 eV

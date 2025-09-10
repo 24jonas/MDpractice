@@ -2,7 +2,7 @@ import numpy as np
 # main.py
 from grapheneSheetGen import generate_graphene_sheet
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('Agg') ## generates static image instead of gui. Used for wsl
 import matplotlib.pyplot as plt
 
 a = 2.46
@@ -12,13 +12,15 @@ positions, supercell = generate_graphene_sheet(a=a, nx=nx, ny=ny)
 # Test Plot
 plt.figure(figsize=(6, 6))
 plt.scatter(positions[:, 0], positions[:, 1], c=['blue' if i % 2 == 0 else 'orange' for i in range(len(positions))])
-plt.gca().set_aspect('equal')
+plt.gca().set_aspect('equal') # Set aspect ration to equal to make sure graph bugs are from calculations
 plt.title(f"Graphene sheet")
 plt.xlabel("x")
 plt.ylabel("y")
 plt.grid(True)
 plt.savefig('graphene.png')
 
+
+## Helped a lot with debugging
 def count_nearest_neighbors(positions, cutoff=1.6):
     """
     Count how many neighbors each atom has within the cutoff distance.
@@ -44,6 +46,4 @@ def count_nearest_neighbors(positions, cutoff=1.6):
 
 neighbor_counts = count_nearest_neighbors(positions)
 
-print("Nearest neighbor counts for first 20 atoms:")
-print(neighbor_counts[:20])
 print(f"Average nearest neighbors per atom: {np.mean(neighbor_counts)}")
