@@ -86,32 +86,33 @@ def estimate_atoms_supercell_core(spec: ConfigSpec, *, cell_metrics: dict) -> in
         n_prim ≈ round(A_super / A_prim)
 
     Then total atoms are:
-        N ≈ nlayers * nbasis * n_prim
+        N ≈ sum_layer nbasis(layer) * n_prim(layer)
 
     Assumptions:
-      - hex material (graphene-like) with a well-defined primitive cell
-      - each layer uses the same basis size (true for homogeneous graphene bilayers)
+      - hex material with a well-defined primitive cell
     """
     A_super = float(cell_metrics.get("area", 0.0))
     if A_super <= 0:
         return 0
 
-    mat = get_material(spec.layers[0].material_id)
+    total = 0
+    for layer in spec.layers:
+        mat = get_material(layer.material_id)
 
-    # Build a primitive cell consistent with the material and vacuum choice,
-    # then compute its in-plane area.
-    prim = hex_cell_rows(mat.a, cell_z=spec.geometry.vacuum)
-    A_prim = float(_cell_metrics(prim)["area"])
-    if A_prim <= 0:
-        return 0
+        # Build a primitive cell consistent with the material and vacuum choice,
+        # then compute its in-plane area.
+        prim = hex_cell_rows(mat.a, cell_z=spec.geometry.vacuum)
+        A_prim = float(_cell_metrics(prim)["area"])
+        if A_prim <= 0:
+            return 0
 
-    n_prim = int(round(A_super / A_prim))
-    if n_prim <= 0:
-        return 0
+        n_prim = int(round(A_super / A_prim))
+        if n_prim <= 0:
+            return 0
 
-    nbasis = len(mat.basis_species)
-    nlayers = len(spec.layers)
-    return int(nlayers * nbasis * n_prim)
+        total += len(mat.basis_species) * n_prim
+
+    return int(total)
 
 
 def enforce_caps(spec: ConfigSpec, *, cell_metrics: Optional[dict] = None) -> CapDecision:

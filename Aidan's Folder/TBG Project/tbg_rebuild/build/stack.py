@@ -183,20 +183,26 @@ def build_bilayer_supercell_core_from_spec(spec: ConfigSpec, plan: DomainPlan) -
 
     # Supported formats:
     # - [M_sub, M_top]
-    # - [M] (then reuse the same matrix for both layers)
+    # - [M_top] plus meta["M"] for the substrate, which is what supercell-core
+    #   commonly returns
+    # - [M] with no meta["M"] fallback (then reuse the same matrix for both layers)
     layer_Ms = list(layer_Ms)
-    if len(layer_Ms) == 1:
-        M0 = np.array(layer_Ms[0], dtype=int)
-        M1 = np.array(layer_Ms[0], dtype=int)
+    if len(layer_Ms) >= 2:
+        M0 = np.rint(np.asarray(layer_Ms[0], dtype=float)).astype(int)
+        M1 = np.rint(np.asarray(layer_Ms[1], dtype=float)).astype(int)
+    elif "M" in meta and meta["M"] is not None:
+        M0 = np.rint(np.asarray(meta["M"], dtype=float)).astype(int)
+        M1 = np.rint(np.asarray(layer_Ms[0], dtype=float)).astype(int)
     else:
-        M0 = np.array(layer_Ms[0], dtype=int)
-        M1 = np.array(layer_Ms[1], dtype=int)
+        M0 = np.rint(np.asarray(layer_Ms[0], dtype=float)).astype(int)
+        M1 = np.rint(np.asarray(layer_Ms[0], dtype=float)).astype(int)
 
     vacuum = float(spec.geometry.vacuum)
     d = float(spec.geometry.interlayer_distance)
     zc = float(spec.geometry.z_center)
     z0 = zc - 0.5 * d
     z1 = zc + 0.5 * d
+    heterostructure = spec.layers[0].material_id != spec.layers[1].material_id
 
     # Build both layers in the planned commensurate cell.
     layer0 = build_monolayer_supercell(
@@ -208,6 +214,7 @@ def build_bilayer_supercell_core_from_spec(spec: ConfigSpec, plan: DomainPlan) -
         pbc=spec.geometry.pbc,
         stage="built",
         job_id=spec.job_name,
+        point_method="clip",
     )
     layer1 = build_monolayer_supercell(
         spec.layers[1].material_id,
@@ -218,6 +225,7 @@ def build_bilayer_supercell_core_from_spec(spec: ConfigSpec, plan: DomainPlan) -
         pbc=spec.geometry.pbc,
         stage="built",
         job_id=spec.job_name,
+        point_method="matrix" if heterostructure else "clip",
     )
 
     # Apply solver-provided strain tensors if present.

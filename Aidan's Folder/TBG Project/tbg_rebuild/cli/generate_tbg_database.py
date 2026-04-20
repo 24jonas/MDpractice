@@ -8,11 +8,12 @@ from dataclasses import replace
 from pathlib import Path
 
 from tbg_rebuild.explore.specs import CapsPolicy, ConfigSpec, OutputPolicy, make_spec_tbg_supercell_core
+from tbg_rebuild.materials.catalog import get_material, list_materials
 
 
 # ---------------------------------------------------------------------------
-# Put any TBG twist angles to generate in degrees. The CLI will build one
-# full supercell-core structure per angle unless --angles is provided.
+# Put any twisted bilayer angles to generate in degrees. The CLI will build
+# one full supercell-core structure per angle unless --angles is provided.
 # ---------------------------------------------------------------------------
 ANGLE_LIST_DEG = [
     2.2800000000000002,
@@ -93,7 +94,18 @@ def _json_default(value: object) -> object:
 
 def _angle_token(theta_deg: float) -> str:
     token = f"{theta_deg:.8g}".replace("-", "m").replace(".", "p")
-    return token.rstrip("0").rstrip("p")
+    if "p" in token:
+        token = token.rstrip("0").rstrip("p")
+    return token
+
+
+def _job_prefix(material_id: str, top_material_id: str | None = None) -> str:
+    top_material_id = material_id if top_material_id is None else top_material_id
+    if material_id == top_material_id == "graphene":
+        return "tbg"
+    if material_id == top_material_id:
+        return f"tb_{material_id}"
+    return f"tb_{material_id}_{top_material_id}"
 
 
 def _parse_angle_text(value: str, *, source: str = "--angles") -> list[float]:
@@ -155,6 +167,14 @@ def _ledger_paths(outdir: Path, *, chunk_index: int, chunk_count: int) -> tuple[
 
 
 def _make_jobs(args: argparse.Namespace) -> list[ConfigSpec]:
+    top_material_id = args.material_id if args.top_material_id is None else args.top_material_id
+    material = get_material(args.material_id)
+    top_material = get_material(top_material_id)
+    interlayer_distance = (
+        0.5 * (material.default_interlayer + top_material.default_interlayer)
+        if args.interlayer_distance is None
+        else float(args.interlayer_distance)
+    )
     caps = CapsPolicy(
         max_atoms=int(args.max_atoms),
         downsample_views_above=int(args.downsample_views_above),
@@ -169,18 +189,19 @@ def _make_jobs(args: argparse.Namespace) -> list[ConfigSpec]:
     for theta in _selected_angles(args):
         token = _angle_token(theta)
         spec = make_spec_tbg_supercell_core(
-            job_name=f"tbg_theta_{token}deg",
+            job_name=f"{_job_prefix(args.material_id, top_material_id)}_theta_{token}deg",
             material_id=args.material_id,
+            top_material_id=top_material_id,
             theta_deg=theta,
             vacuum=args.vacuum,
-            interlayer_distance=args.interlayer_distance,
+            interlayer_distance=interlayer_distance,
             max_el=args.max_el,
             theta_window_deg=args.theta_window_deg,
             theta_step_deg=args.theta_step_deg,
             strain_tol=args.strain_tol,
             caps=caps,
             notes=(
-                "HPRC full-generation TBG dataset job. "
+                f"HPRC full-generation twisted bilayer {material.id}/{top_material.id} dataset job. "
                 "Large structures are generated; corrected/max_strain remain dataset metadata."
             ),
         )
@@ -207,9 +228,15 @@ def _write_structure(path: Path, spec: ConfigSpec, result) -> Path:
         {
             "job": spec.job_name,
             "theta_deg": spec.periodicity.solver.get("theta_deg"),
+            "theta_used_deg": (commensurate_meta or {}).get("theta_used_deg"),
+            "theta_delta_deg": (commensurate_meta or {}).get("theta_delta_deg"),
             "strain_tol": spec.periodicity.solver.get("strain_tol"),
             "corrected": bool(getattr(result.plan, "corrected", False)),
+            "strain_exceeds_tol": bool(
+                (getattr(result.plan, "commensurate_meta", None) or {}).get("strain_exceeds_tol", False)
+            ),
             "max_strain": float(getattr(result.plan, "max_strain", 0.0)),
+            "correction_max_abs": (commensurate_meta or {}).get("correction_max_abs"),
         }
     )
     write(path, atoms)
@@ -235,7 +262,7 @@ def _slurm_chunk_defaults(args: argparse.Namespace) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog="python -m tbg_rebuild.cli.generate_tbg_database",
-        description="Generate full TBG structure datasets for HPRC angle sweeps.",
+        description="Generate full twisted bilayer structure datasets for HPRC angle sweeps.",
     )
     parser.add_argument("--outdir", default="out_tbg_database", help="Output dataset directory.")
     parser.add_argument(
@@ -248,9 +275,20 @@ def main() -> None:
         default=None,
         help="Text file of twist angles. Whitespace, commas, blank lines, and # comments are allowed.",
     )
-    parser.add_argument("--material-id", default="graphene")
+    parser.add_argument("--material-id", default="graphene", choices=list_materials())
+    parser.add_argument(
+        "--top-material-id",
+        default=None,
+        choices=list_materials(),
+        help="Top/twisted layer material. Defaults to --material-id.",
+    )
     parser.add_argument("--vacuum", type=float, default=24.0)
-    parser.add_argument("--interlayer-distance", type=float, default=3.35)
+    parser.add_argument(
+        "--interlayer-distance",
+        type=float,
+        default=None,
+        help="Layer spacing in Å. Defaults to the selected material's catalog value.",
+    )
     parser.add_argument("--max-el", type=int, default=80, help="supercell-core search limit for production jobs.")
     parser.add_argument("--theta-window-deg", type=float, default=0.25)
     parser.add_argument("--theta-step-deg", type=float, default=0.01)
@@ -321,6 +359,11 @@ def main() -> None:
 
             corrected = bool(getattr(res.plan, "corrected", False))
             max_strain = float(getattr(res.plan, "max_strain", 0.0))
+            commensurate_meta = getattr(res.plan, "commensurate_meta", None) or {}
+            strain_exceeds_tol = bool(commensurate_meta.get("strain_exceeds_tol", False))
+            correction_max_abs = commensurate_meta.get("correction_max_abs")
+            theta_used_deg = commensurate_meta.get("theta_used_deg")
+            theta_delta_deg = commensurate_meta.get("theta_delta_deg")
             theta_deg = spec.periodicity.solver.get("theta_deg")
             strain_tol = spec.periodicity.solver.get("strain_tol")
             n_built = len(res.built.species)
@@ -331,9 +374,13 @@ def main() -> None:
                     "job": spec.job_name,
                     "mode": spec.periodicity.mode,
                     "theta_deg": theta_deg,
+                    "theta_used_deg": theta_used_deg,
+                    "theta_delta_deg": theta_delta_deg,
                     "strain_tol": strain_tol,
                     "corrected": corrected,
+                    "strain_exceeds_tol": strain_exceeds_tol,
                     "max_strain": max_strain,
+                    "correction_max_abs": correction_max_abs,
                     "domain_reason": res.plan.reason,
                     "n_atoms": n_built,
                     "max_el": spec.periodicity.solver.get("max_el"),
@@ -348,7 +395,8 @@ def main() -> None:
             if not args.quiet:
                 print(
                     f"  OK   {spec.job_name:<30} N={n_built:<8} "
-                    f"corr={_fmt_bool(corrected)} strain={_maybe_float(max_strain)}"
+                    f"corr={_fmt_bool(corrected)} tol={_fmt_bool(strain_exceeds_tol)} "
+                    f"strain={_maybe_float(max_strain)}"
                 )
 
         except Exception as e:

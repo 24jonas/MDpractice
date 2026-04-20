@@ -154,10 +154,14 @@ cat "$SCRATCH"/tbg_dataset/dataset_failures_chunk_*.jsonl > "$SCRATCH"/tbg_datas
 Each JSONL record includes:
 
 - `theta_deg`: requested twist angle,
+- `theta_used_deg`: twist angle selected by `supercell-core`,
+- `theta_delta_deg`: selected minus requested angle,
 - `n_atoms`: generated atom count,
-- `corrected`: whether `supercell-core` applied strain above tolerance,
+- `corrected`: whether `supercell-core` applied a nonzero commensurating strain,
 - `max_strain`: solver-reported strain,
-- `strain_tol`: threshold used for `corrected`,
+- `correction_max_abs`: largest absolute component in the returned strain tensor,
+- `strain_tol`: threshold used for `strain_exceeds_tol`,
+- `strain_exceeds_tol`: whether `max_strain > strain_tol`,
 - `validation_built_ok`: whether geometry validation passed,
 - `structure_path`: generated `.extxyz` file.
 

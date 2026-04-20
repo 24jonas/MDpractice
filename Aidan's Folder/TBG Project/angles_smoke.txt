@@ -1,0 +1,6 @@
+# Small angle set for fast real-generation smoke tests.
+#
+# This is intentionally tiny. Use angles_comprehensive.txt for broad dry-run
+# coverage or full production sweeps.
+
+2.0

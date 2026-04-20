@@ -2,6 +2,8 @@ from argparse import Namespace
 from pathlib import Path
 
 from tbg_rebuild.cli.generate_tbg_database import (
+    _angle_token,
+    _make_jobs,
     _chunk_jobs,
     _ledger_paths,
     _parse_angle_file,
@@ -47,3 +49,57 @@ def test_chunked_ledger_paths_include_chunk_identity(tmp_path: Path):
 
     assert ledger == tmp_path / "dataset_results_chunk_0003_of_0010.jsonl"
     assert failures == tmp_path / "dataset_failures_chunk_0003_of_0010.jsonl"
+
+
+def test_angle_token_preserves_integer_trailing_zeroes():
+    assert _angle_token(30.0) == "30"
+    assert _angle_token(2.0) == "2"
+    assert _angle_token(2.50) == "2p5"
+
+
+def test_make_jobs_supports_hbn_defaults():
+    args = Namespace(
+        angles="2.0",
+        angle_file=None,
+        material_id="hbn",
+        top_material_id=None,
+        vacuum=24.0,
+        interlayer_distance=None,
+        max_el=12,
+        theta_window_deg=0.25,
+        theta_step_deg=0.05,
+        strain_tol=5e-4,
+        max_atoms=200_000,
+        downsample_views_above=25_000,
+        no_views=True,
+    )
+
+    jobs = _make_jobs(args)
+
+    assert [job.job_name for job in jobs] == ["tb_hbn_theta_2deg"]
+    assert [layer.material_id for layer in jobs[0].layers] == ["hbn", "hbn"]
+    assert jobs[0].geometry.interlayer_distance == 3.33
+
+
+def test_make_jobs_supports_heterostructure_materials():
+    args = Namespace(
+        angles="2.0",
+        angle_file=None,
+        material_id="graphene",
+        top_material_id="hbn",
+        vacuum=24.0,
+        interlayer_distance=None,
+        max_el=12,
+        theta_window_deg=0.25,
+        theta_step_deg=0.05,
+        strain_tol=5e-4,
+        max_atoms=200_000,
+        downsample_views_above=25_000,
+        no_views=True,
+    )
+
+    jobs = _make_jobs(args)
+
+    assert [job.job_name for job in jobs] == ["tb_graphene_hbn_theta_2deg"]
+    assert [layer.material_id for layer in jobs[0].layers] == ["graphene", "hbn"]
+    assert jobs[0].geometry.interlayer_distance == 3.34

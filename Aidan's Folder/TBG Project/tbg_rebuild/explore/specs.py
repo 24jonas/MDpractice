@@ -4,6 +4,8 @@ from dataclasses import dataclass, field, asdict, replace
 from typing import Any, Dict, List, Literal, Tuple, Optional
 from datetime import datetime
 
+from tbg_rebuild.materials.catalog import get_material
+
 
 # -----------------------------
 # Type aliases used in the spec
@@ -248,9 +250,10 @@ def make_spec_tbg_supercell_core(
     *,
     job_name: str,
     material_id: str,
+    top_material_id: str | None = None,
     theta_deg: float,
     vacuum: float = 24.0,
-    interlayer_distance: float = 3.35,
+    interlayer_distance: float | None = None,
     max_el: int = 20,
     theta_window_deg: float = 0.2,
     theta_step_deg: float = 0.01,
@@ -270,9 +273,17 @@ def make_spec_tbg_supercell_core(
       - twist_angle fields are not used; theta is passed via periodicity.solver.
       - artificial strain stage is disabled (we only apply solver-provided strain tensors).
     """
+    top_material_id = material_id if top_material_id is None else top_material_id
+    bottom_material = get_material(material_id)
+    top_material = get_material(top_material_id)
+    if interlayer_distance is None:
+        interlayer_distance = 0.5 * (
+            bottom_material.default_interlayer + top_material.default_interlayer
+        )
+
     layers = [
         LayerSpec(material_id=material_id, twist_angle=0.0),
-        LayerSpec(material_id=material_id, twist_angle=0.0),
+        LayerSpec(material_id=top_material_id, twist_angle=0.0),
     ]
     return ConfigSpec(
         spec_version="0.2",

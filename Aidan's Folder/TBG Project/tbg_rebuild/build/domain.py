@@ -35,7 +35,7 @@ class DomainPlan:
     N_est: int                  # estimated atom count used for caps + logging
     downsample_views: bool      # visualization policy (not a build gate)
 
-    corrected: bool = False     # supercell-core: whether strain correction exceeded tolerance
+    corrected: bool = False     # supercell-core: whether commensurating strain was applied
     max_strain: float = 0.0     # supercell-core: maximum strain magnitude reported by solver
     commensurate_meta: Optional[dict] = None  # supercell-core: solver metadata (M, layer_Ms, etc.)
 

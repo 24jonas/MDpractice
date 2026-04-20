@@ -6,4 +6,5 @@ __pycache__/
 logs/
 out_part1/
 out_tbg_database/
+out_material_matrix/
 smoke_out_unified/

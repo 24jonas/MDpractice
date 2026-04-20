@@ -133,35 +133,61 @@ def lattice_points_in_supercell(M: np.ndarray) -> np.ndarray:
     This function is a "classic" approach but can be brittle if floating tolerances interact
     badly with a particular M; see lattice_points_by_clipping() for a more robust method.
     """
-    M = np.asarray(M, int)
+    M = np.rint(np.asarray(M, float)).astype(int)
     det = int(round(abs(np.linalg.det(M))))
     if det <= 0:
         raise ValueError(f"Bad supercell matrix det={det} for M={M}")
 
-    # Brute force enumerate points in a bounding box and select those in [0,1)^2.
+    # Enumerate integer points in the supercell parallelogram and map them back
+    # to supercell fractional coordinates.  supercell-core's layer matrices use
+    # the convention expected by this column-vector formula.
     invM = np.linalg.inv(M.astype(float))
+    tol = 1e-10
+
+    corners = np.array(
+        [
+            [0.0, 0.0],
+            M @ np.array([1.0, 0.0]),
+            M @ np.array([0.0, 1.0]),
+            M @ np.array([1.0, 1.0]),
+        ]
+    )
+    lo = np.floor(corners.min(axis=0)).astype(int) - 1
+    hi = np.ceil(corners.max(axis=0)).astype(int) + 1
+
+    def _snap_wrapped(uv: np.ndarray) -> np.ndarray:
+        uv = uv - np.floor(uv)
+        uv[np.isclose(uv, 1.0, atol=tol, rtol=0.0)] = 0.0
+        uv[np.isclose(uv, 0.0, atol=tol, rtol=0.0)] = 0.0
+        return uv
+
+    def _dedupe(arr: list[np.ndarray]) -> np.ndarray:
+        pts_arr = np.asarray(arr, float)
+        key = np.round(pts_arr / tol).astype(np.int64)
+        _, idx = np.unique(key, axis=0, return_index=True)
+        pts_arr = pts_arr[idx]
+        return pts_arr[np.lexsort((pts_arr[:, 1], pts_arr[:, 0]))]
+
     pts = []
-    rng = range(-det, det + 1)
-    for i in rng:
-        for j in rng:
+    for i in range(lo[0], hi[0] + 1):
+        for j in range(lo[1], hi[1] + 1):
             uv = invM @ np.array([i, j], float)
-            if (-1e-12 <= uv[0] < 1 - 1e-12) and (-1e-12 <= uv[1] < 1 - 1e-12):
-                pts.append(uv)
+            if (-tol <= uv[0] < 1.0 - tol) and (-tol <= uv[1] < 1.0 - tol):
+                pts.append(_snap_wrapped(uv))
 
-    pts = np.array(pts, float)
+    pts = _dedupe(pts)
 
-    # Must have at least det points before deduplication.
-    if len(pts) < det:
-        raise RuntimeError("Failed to enumerate enough lattice points.")
-
-    # Dedupe using a tight rounding key.
-    key = np.round(pts / 1e-10).astype(np.int64)
-    _, idx = np.unique(key, axis=0, return_index=True)
-    pts = pts[idx]
-
-    # If we didn't land on exactly det after dedupe, fall back to a stable truncation.
     if len(pts) != det:
-        pts = pts[np.lexsort((pts[:, 1], pts[:, 0]))][:det]
+        pts = []
+        for i in range(lo[0], hi[0] + 1):
+            for j in range(lo[1], hi[1] + 1):
+                uv = invM @ np.array([i, j], float)
+                if (-tol <= uv[0] <= 1.0 + tol) and (-tol <= uv[1] <= 1.0 + tol):
+                    pts.append(_snap_wrapped(uv))
+        pts = _dedupe(pts)
+
+    if len(pts) != det:
+        raise RuntimeError(f"Expected {det} lattice points for M={M.tolist()}, found {len(pts)}.")
 
     return pts
 
@@ -231,6 +257,7 @@ def build_monolayer_supercell(
     pbc=(True, True, False),
     stage="built",
     job_id: str | None = None,
+    point_method: str = "clip",
 ) -> Structure:
     """
     Build a monolayer that matches a provided commensurate supercell cell.
@@ -244,9 +271,10 @@ def build_monolayer_supercell(
       vectors that map into the commensurate supercell.
     - Place the primitive basis at each translation and wrap into the cell.
 
-    Sanity check:
-    - We verify that the number of translations is consistent with the area ratio
-      (A_super / A_prim) to catch bad enumeration early.
+    Translation points are usually found by geometric clipping, which preserves
+    the existing homogeneous-graphene behavior. Heterostructure top layers can
+    request matrix enumeration because their common cell may be lattice-mismatched
+    or strained relative to the unstrained primitive.
     """
     mat = get_material(material_id)
     prim = primitive_2d(mat, vacuum=vacuum)
@@ -255,47 +283,57 @@ def build_monolayer_supercell(
     cell_prim = prim.cell.copy()
     cell_prim[2, 2] = float(vacuum)
 
-    # Primitive in-plane vectors (cartesian).
-    a1 = cell_prim[0, :].copy()
-    a2 = cell_prim[1, :].copy()
+    if point_method == "matrix":
+        pts = lattice_points_in_supercell(M)
+    elif point_method == "clip":
+        # Choose a conservative nmax that should cover the supercell parallelogram.
+        # We over-shoot slightly because the clip step deduplicates and filters.
+        a1 = cell_prim[0, :].copy()
+        a2 = cell_prim[1, :].copy()
+        L1 = float(np.linalg.norm(cell[:2, :2][0]))
+        L2 = float(np.linalg.norm(cell[:2, :2][1]))
+        lp1 = float(np.linalg.norm(a1[:2]))
+        lp2 = float(np.linalg.norm(a2[:2]))
+        nmax = int(np.ceil((L1 + L2) / max(lp1, lp2))) + 3
 
-    # Choose a conservative nmax that should cover the supercell parallelogram.
-    # We over-shoot slightly because the clip step deduplicates and filters.
-    L1 = float(np.linalg.norm(cell[:2, :2][0]))
-    L2 = float(np.linalg.norm(cell[:2, :2][1]))
-    lp1 = float(np.linalg.norm(a1[:2]))
-    lp2 = float(np.linalg.norm(a2[:2]))
-    nmax = int(np.ceil((L1 + L2) / max(lp1, lp2))) + 3
-
-    pts = lattice_points_by_clipping(
-        cell_super=np.asarray(cell, float),
-        a1=a1,
-        a2=a2,
-        nmax=nmax,
-        tol=1e-8,
-    )
-
-    # Optional sanity: translation count should approximately match the in-plane area ratio.
-    from tbg_rebuild.utils.geom import cell_metrics as _cell_metrics
-
-    A_super = float(_cell_metrics(np.asarray(cell, float))["area"])
-    A_prim = float(_cell_metrics(np.asarray(cell_prim, float))["area"])
-    n_expected = int(round(A_super / A_prim))
-    if abs(len(pts) - n_expected) > 2:
-        raise RuntimeError(
-            f"Clipping produced {len(pts)} lattice translations, expected ~{n_expected} "
-            f"(A_super/A_prim={A_super/A_prim:.6g})."
+        pts = lattice_points_by_clipping(
+            cell_super=np.asarray(cell, float),
+            a1=a1,
+            a2=a2,
+            nmax=nmax,
+            tol=1e-8,
         )
 
-    # Primitive basis positions (cartesian); set slab height to z0.
-    basis_pos = prim.positions.copy()
-    basis_pos[:, 2] = float(z0)
+        # Optional sanity: translation count should approximately match the in-plane area ratio.
+        from tbg_rebuild.utils.geom import cell_metrics as _cell_metrics
+
+        A_super = float(_cell_metrics(np.asarray(cell, float))["area"])
+        A_prim = float(_cell_metrics(np.asarray(cell_prim, float))["area"])
+        n_expected = int(round(A_super / A_prim))
+        if abs(len(pts) - n_expected) > 2:
+            raise RuntimeError(
+                f"Clipping produced {len(pts)} lattice translations, expected ~{n_expected} "
+                f"(A_super/A_prim={A_super/A_prim:.6g})."
+            )
+    else:
+        raise ValueError(f"Unknown point_method={point_method!r}")
+
     basis_species = list(prim.species)
     basis_sub = np.asarray(prim.sublattice, int)
 
     # Target supercell in-plane vectors (cartesian).
     c1 = np.asarray(cell[0, :], float)
     c2 = np.asarray(cell[1, :], float)
+    matrix_basis_frac = None
+    if point_method == "matrix":
+        M_int = np.rint(np.asarray(M, float)).astype(int)
+        matrix_basis_frac = [
+            np.linalg.inv(M_int.astype(float)) @ np.asarray(frac, float)
+            for frac in mat.basis_frac
+        ]
+    else:
+        basis_pos = prim.positions.copy()
+        basis_pos[:, 2] = float(z0)
 
     positions = []
     species = []
@@ -304,7 +342,16 @@ def build_monolayer_supercell(
     # For each translation (u,v) in supercell fractional coords, shift by u*c1 + v*c2.
     for uv in pts:
         shift = uv[0] * c1 + uv[1] * c2
-        p = basis_pos + shift[None, :]
+        if matrix_basis_frac is None:
+            p = basis_pos + shift[None, :]
+        else:
+            p = []
+            for basis_uv in matrix_basis_frac:
+                s = np.array([uv[0] + basis_uv[0], uv[1] + basis_uv[1], 0.0], dtype=float)
+                r = s @ np.asarray(cell, float)
+                r[2] = float(z0)
+                p.append(r)
+            p = np.vstack(p)
         positions.append(p)
         species.extend(basis_species)
         sublattice.extend(basis_sub.tolist())
@@ -316,7 +363,12 @@ def build_monolayer_supercell(
         "layer_id": np.zeros(len(positions), dtype=int),
         "sublattice": np.asarray(sublattice, int),
     }
-    meta = {"stage": stage, "material_id": material_id, "M": np.asarray(M, int).tolist()}
+    meta = {
+        "stage": stage,
+        "material_id": material_id,
+        "M": np.rint(np.asarray(M, float)).astype(int).tolist(),
+        "point_method": point_method,
+    }
     if job_id is not None:
         meta["job_id"] = str(job_id)
 

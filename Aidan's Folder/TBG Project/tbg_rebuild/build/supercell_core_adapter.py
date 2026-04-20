@@ -15,7 +15,7 @@ class SupercellCorePlan:
     theta_deg: float                 # chosen / evaluated twist
     max_strain: float
     strain_tensors: np.ndarray       # shape (n_layers, 2,2) (typically 1 layer above substrate)
-    corrected: bool                  # max_strain > tol
+    corrected: bool                  # whether supercell-core applied a nonzero commensurating strain
     meta: Dict[str, Any]             # store M, layer_Ms, etc.
 
 def _deg2rad(x: float) -> float:
@@ -25,12 +25,35 @@ def _debug(msg: str) -> None:
     if os.environ.get("TBG_DEBUG", ""):
         print(msg)
 
+
+def _make_sc_lattice(sc, material_id: str, vacuum: float):
+    mat = get_material(material_id)
+
+    # supercell-core uses 2D vectors; we build them in Å in the same convention
+    # as the rest of the project.
+    cell_prim = hex_cell_rows(mat.a, cell_z=vacuum)
+    a1 = cell_prim[0, :2]
+    a2 = cell_prim[1, :2]
+
+    lat = sc.lattice().set_vectors(tuple(a1), tuple(a2))
+
+    # Use the material basis (fractional uv) to populate the primitive in sc coords.
+    # Passing each species preserves heterostructures such as graphene/hBN.
+    basis_uv = np.asarray(mat.basis_frac, float)
+    basis_cart = basis_uv[:, 0, None] * np.array(a1)[None, :] + basis_uv[:, 1, None] * np.array(a2)[None, :]
+    for i, sym in enumerate(mat.basis_species):
+        x, y = basis_cart[i]
+        lat.add_atom(sym, (float(x), float(y), 0.0))
+
+    return lat
+
+
 def plan_with_supercell_core(spec) -> SupercellCorePlan:
     """
-    Uses supercell-core to find a commensurate supercell for bilayer graphene-like systems.
+    Uses supercell-core to find a commensurate supercell for hex bilayers.
 
     Assumptions for now (matches your meeting scope):
-    - 2 layers total, same material_id (graphene on graphene)
+    - 2 layers total
     - layer0 is substrate, layer1 is twisted
     """
     try:
@@ -43,33 +66,13 @@ def plan_with_supercell_core(spec) -> SupercellCorePlan:
 
     if len(spec.layers) != 2:
         raise ValueError("supercell-core mode currently supports exactly 2 layers.")
-    if spec.layers[0].material_id != spec.layers[1].material_id:
-        raise ValueError("supercell-core mode currently assumes identical materials for both layers.")
 
-    mat = get_material(spec.layers[0].material_id)
+    bottom_material_id = spec.layers[0].material_id
+    top_material_id = spec.layers[1].material_id
+    bottom_lat = _make_sc_lattice(sc, bottom_material_id, spec.geometry.vacuum)
+    top_lat = _make_sc_lattice(sc, top_material_id, spec.geometry.vacuum)
 
-    # supercell-core uses 2D vectors; we build them in Å in the same convention as your project
-    # Your hex primitives typically use:
-    # a1=(a,0), a2=(a/2, sqrt(3)/2 a) or the rotated equivalent.
-    # Use your canonical helper to avoid mismatch.
-    cell_prim = hex_cell_rows(mat.a, cell_z=spec.geometry.vacuum)
-    a1 = cell_prim[0, :2]
-    a2 = cell_prim[1, :2]
-
-    # Build supercell-core Lattice for graphene primitive.
-    # Important: include both basis atoms for graphene if your material has nbasis=2.
-    lat = sc.lattice().set_vectors(tuple(a1), tuple(a2))
-
-    # Use the material basis (fractional uv) to populate the primitive in sc coords.
-    # supercell-core expects positions in the cell; easiest is crystal coords (fractional) or angstrom.
-    # We’ll pass Angstrom positions by converting uv -> cart in 2D.
-    basis_uv = np.asarray(mat.basis_frac, float)  # (nbasis,2)
-    basis_cart = basis_uv[:, 0, None]*np.array(a1)[None, :] + basis_uv[:, 1, None]*np.array(a2)[None, :]
-    for i, sym in enumerate(mat.basis_species):
-        x, y = basis_cart[i]
-        lat.add_atom(sym, (float(x), float(y), 0.0))
-
-    h = sc.heterostructure().set_substrate(lat).add_layer(lat)
+    h = sc.heterostructure().set_substrate(bottom_lat).add_layer(top_lat)
 
     s = dict(spec.periodicity.solver or {})
     method = s.get("method", "opt")
@@ -118,7 +121,12 @@ def plan_with_supercell_core(spec) -> SupercellCorePlan:
     max_strain = float(res.max_strain())
     strain_tensors = np.asarray(res.strain_tensors(), float)  # per layer above substrate
     tol = float(s.get("strain_tol", 5e-4))
-    corrected = bool(max_strain > tol)
+    correction_eps = float(s.get("correction_eps", 1e-12))
+    correction_max_abs = float(np.max(np.abs(strain_tensors))) if strain_tensors.size else 0.0
+    corrected = bool(correction_max_abs > correction_eps)
+    strain_exceeds_tol = bool(max_strain > tol)
+    theta_actual_deg = [float(x * 180.0 / np.pi) for x in res.thetas()]
+    theta_used_deg = theta_actual_deg[0] if theta_actual_deg else theta_deg
 
     def _maybe_call(x):
         return x() if callable(x) else x
@@ -132,9 +140,18 @@ def plan_with_supercell_core(spec) -> SupercellCorePlan:
     meta = {
         "method": method,
         "theta_req_deg": theta_deg,
+        "theta_actual_deg": theta_actual_deg,
+        "theta_used_deg": theta_used_deg,
+        "theta_delta_deg": float(theta_used_deg - theta_deg),
         "theta_grid_deg": [float(x * 180.0 / np.pi) for x in thetas],
         "max_el": max_el,
         "max_strain": max_strain,
+        "correction_max_abs": correction_max_abs,
+        "strain_tol": tol,
+        "correction_eps": correction_eps,
+        "corrected": corrected,
+        "strain_exceeds_tol": strain_exceeds_tol,
+        "material_ids": [bottom_material_id, top_material_id],
         "M": M_val,
         "layer_Ms": layer_Ms_val,
 }
