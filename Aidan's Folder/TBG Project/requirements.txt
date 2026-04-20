@@ -1,0 +1,5 @@
+numpy
+matplotlib
+ase
+supercell-core
+pytest

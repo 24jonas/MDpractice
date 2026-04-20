@@ -186,8 +186,11 @@ def neighbor_counts_xy_sample(
     seed: int = 0,
 ) -> np.ndarray:
     """
-    Sampled neighbor count within cutoff using PBC in x,y (z included).
-    Returns counts for the sampled atoms only.
+    Exact neighbor counts for sampled center atoms using all atoms as candidates.
+
+    PBC is applied in x,y and z is included in the distance. Earlier versions
+    counted sampled atoms only against the sampled subset, which undercounted
+    coordination for systems larger than max_atoms.
     """
     R = np.asarray(R, dtype=float)
     cutoff = float(cutoff)
@@ -195,12 +198,35 @@ def neighbor_counts_xy_sample(
     if len(idx) == 0:
         return np.array([], dtype=int)
 
-    Rs = R[idx]
-    S = cart_to_frac(Rs, cell_rows)
-    dS = S[None, :, :] - S[:, None, :]
-    dS = min_image_delta_frac_xy(dS)
-    dR = frac_to_cart(dS.reshape(-1, 3), cell_rows).reshape(dS.shape)
+    S_all = cart_to_frac(R, cell_rows)
+    S_centers = S_all[idx]
+    cutoff2 = cutoff * cutoff
 
-    d2 = np.einsum("ijk,ijk->ij", dR, dR)
-    np.fill_diagonal(d2, np.inf)
-    return np.sum(d2 <= cutoff * cutoff, axis=1).astype(int)
+    counts = np.zeros(len(idx), dtype=int)
+    center_chunk = 64
+    atom_chunk = 20_000
+
+    for c0 in range(0, len(idx), center_chunk):
+        c1 = min(c0 + center_chunk, len(idx))
+        Sc = S_centers[c0:c1]
+        counts_chunk = np.zeros(c1 - c0, dtype=int)
+
+        for a0 in range(0, len(R), atom_chunk):
+            a1 = min(a0 + atom_chunk, len(R))
+            Sa = S_all[a0:a1]
+
+            dS = Sa[None, :, :] - Sc[:, None, :]
+            dS = min_image_delta_frac_xy(dS)
+            dR = frac_to_cart(dS.reshape(-1, 3), cell_rows).reshape(dS.shape)
+            d2 = np.einsum("ijk,ijk->ij", dR, dR)
+
+            # Exclude each sampled atom from its own neighbor count.
+            for local_center, atom_index in enumerate(idx[c0:c1]):
+                if a0 <= atom_index < a1:
+                    d2[local_center, atom_index - a0] = np.inf
+
+            counts_chunk += np.sum(d2 <= cutoff2, axis=1).astype(int)
+
+        counts[c0:c1] = counts_chunk
+
+    return counts

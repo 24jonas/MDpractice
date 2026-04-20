@@ -151,9 +151,9 @@ def run_stage_built(
                                     
     # NOTE: If a builder does not provide layer_id, we fall back to all zeros.
     # This keeps visualization and validation code robust to monolayer/tiled paths.
-    layer = struct.arrays.get("layer_id, None")
+    layer = struct.arrays.get("layer_id")
     if layer is None:
-        layer = np.zeros(len(struct.species), dtype=int)
+        struct.arrays["layer_id"] = np.zeros(len(struct.species), dtype=int)
 
     # 3) Save a 3D view (optional). This is the primary human-inspection artifact.
     if make_views:
